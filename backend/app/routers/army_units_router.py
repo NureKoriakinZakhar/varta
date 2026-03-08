@@ -14,7 +14,6 @@ router = APIRouter(prefix="/army_units", tags=["Army Units"])
 def add_soldier(request: army_units_schemas.AddSoldierRequest, db: Session = Depends(get_db), current_user: dict = Depends(role_required(["army_unit"]))):
     army_unit_id = current_user["user_id"]
 
-    # Перевірка існування підрозділу
     army_unit = db.query(models.ArmyUnit).filter_by(id=army_unit_id).first()
     if not army_unit:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Підрозділу з таким ID не існує")
