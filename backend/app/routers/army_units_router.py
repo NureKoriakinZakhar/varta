@@ -168,7 +168,7 @@ def get_all_points(db: Session = Depends(get_db), current_user: dict = Depends(r
         for p in points
     ]
 
-@router.get("/all_soldiers", response_model=List[army_units_schemas.SoldierItem], status_code=status.HTTP_200_OK)
+@router.get("/all_soldiers", response_model=list[army_units_schemas.SoldierItem], status_code=status.HTTP_200_OK)
 def get_all_soldiers(db: Session = Depends(get_db), current_user: dict = Depends(role_required(["army_unit"]))):
     army_unit_id = current_user["user_id"]
 

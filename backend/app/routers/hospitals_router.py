@@ -47,7 +47,7 @@ def discharge_patient(request: hospitals_schemas.PatientActionRequest, db: Sessi
 
     return hospitals_schemas.DetailResponse(detail="Пацієнта виписано з госпіталю")
 
-@router.get("/all_patients", response_model=List[hospitals_schemas.PatientItem], status_code=status.HTTP_200_OK)
+@router.get("/all_patients", response_model=list[hospitals_schemas.PatientItem], status_code=status.HTTP_200_OK)
 def get_all_patients(db: Session = Depends(get_db), current_user: dict = Depends(role_required(["hospital"]))):
     hospital_id = current_user["user_id"]
 
@@ -163,7 +163,7 @@ def add_diagnosis(request: hospitals_schemas.AddDiagnosisRequest, db: Session = 
 
     return hospitals_schemas.DetailResponse(detail="Діагноз додано успішно")
 
-@router.get("/diagnoses/{soldier_id}", response_model=List[hospitals_schemas.DiagnosisItem], status_code=status.HTTP_200_OK)
+@router.get("/diagnoses/{soldier_id}", response_model=list[hospitals_schemas.DiagnosisItem], status_code=status.HTTP_200_OK)
 def get_diagnoses(soldier_id: int, db: Session = Depends(get_db), current_user: dict = Depends(role_required(["hospital"]))):
     hospital_id = current_user["user_id"]
 
