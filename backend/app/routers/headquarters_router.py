@@ -49,22 +49,23 @@ def create_army_unit(request: headquarters_schemas.ArmyUnitCreate, db: Session =
 
     return headquarters_schemas.DetailResponse(detail="Підрозділ успішно створено")
 
-@router.put("/army_units/{unit_id}", response_model=headquarters_schemas.DetailResponse)
-def update_army_unit(unit_id: int, request: headquarters_schemas.ArmyUnitUpdate, db: Session = Depends(get_db), current_user: dict = Depends(role_required(["headquarters"]))):
+@router.patch("/army_units/{unit_id}", response_model=headquarters_schemas.DetailResponse)
+def patch_army_unit(unit_id: int, request: headquarters_schemas.ArmyUnitUpdate, db: Session = Depends(get_db), current_user: dict = Depends(role_required(["headquarters"]))):
 
     unit = db.query(models.ArmyUnit).filter_by(id=unit_id, headquarters_id=current_user["user_id"]).first()
     if not unit:
         raise HTTPException(status_code=404, detail="Підрозділ не знайдено")
 
-    # Перевірка email
-    if request.email and request.email != unit.email:
-        if db.query(models.ArmyUnit).filter_by(email=request.email).first():
+    update_data = request.dict(exclude_unset=True)
+
+
+    if "email" in update_data and update_data["email"] != unit.email:
+        if db.query(models.ArmyUnit).filter_by(email=update_data["email"]).first():
             raise HTTPException(status_code=400, detail="Email вже використовується")
 
-    # Перевірка валідності координат
-    if request.coordinates:
+    if "coordinates" in update_data and update_data["coordinates"]:
         try:
-            lat_str, lon_str = [x.strip() for x in request.coordinates.split(",")]
+            lat_str, lon_str = [x.strip() for x in update_data["coordinates"].split(",")]
             lat = float(lat_str)
             lon = float(lon_str)
             if not (-90 <= lat <= 90 and -180 <= lon <= 180):
@@ -72,17 +73,16 @@ def update_army_unit(unit_id: int, request: headquarters_schemas.ArmyUnitUpdate,
         except Exception:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Некоректний формат координат. Використовуйте формат: 'широта, довгота', наприклад '49.9935, 36.2304'",
+                detail="Некоректний формат координат. Формат: 'широта, довгота'",
             )
 
-    # Оновлення пароля
-    if request.password:
-        unit.password = bcrypt.hashpw(request.password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
+    if "password" in update_data:
+        hashed_password = bcrypt.hashpw(update_data["password"].encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
+        unit.password = hashed_password
+        del update_data["password"]
 
-    # Інші поля
-    for field, value in request.dict(exclude_unset=True).items():
-        if field != "password":
-            setattr(unit, field, value)
+    for field, value in update_data.items():
+        setattr(unit, field, value)
 
     db.commit()
     return headquarters_schemas.DetailResponse(detail="Підрозділ оновлено")
@@ -148,22 +148,21 @@ def create_hospital(request: headquarters_schemas.HospitalCreate, db: Session = 
     db.commit()
     return headquarters_schemas.DetailResponse(detail="Госпіталь успішно створено")
 
-@router.put("/hospitals/{hospital_id}", response_model=headquarters_schemas.DetailResponse)
-def update_hospital(hospital_id: int, request: headquarters_schemas.HospitalUpdate, db: Session = Depends(get_db), current_user: dict = Depends(role_required(["headquarters"]))):
-
+@router.patch("/hospitals/{hospital_id}", response_model=headquarters_schemas.DetailResponse)
+def patch_hospital(hospital_id: int, request: headquarters_schemas.HospitalUpdate, db: Session = Depends(get_db), current_user: dict = Depends(role_required(["headquarters"]))):
     hospital = db.query(models.Hospital).filter_by(id=hospital_id, headquarters_id=current_user["user_id"]).first()
     if not hospital:
         raise HTTPException(status_code=404, detail="Госпіталь не знайдено")
 
-    # Перевірка email
-    if request.email and request.email != hospital.email:
-        if db.query(models.Hospital).filter_by(email=request.email).first():
+    update_data = request.dict(exclude_unset=True)
+
+    if "email" in update_data and update_data["email"] != hospital.email:
+        if db.query(models.Hospital).filter_by(email=update_data["email"]).first():
             raise HTTPException(status_code=400, detail="Email вже використовується")
 
-    # Перевірка валідності координат
-    if request.coordinates:
+    if "coordinates" in update_data and update_data["coordinates"]:
         try:
-            lat_str, lon_str = [x.strip() for x in request.coordinates.split(",")]
+            lat_str, lon_str = [x.strip() for x in update_data["coordinates"].split(",")]
             lat = float(lat_str)
             lon = float(lon_str)
             if not (-90 <= lat <= 90 and -180 <= lon <= 180):
@@ -171,24 +170,23 @@ def update_hospital(hospital_id: int, request: headquarters_schemas.HospitalUpda
         except Exception:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Некоректний формат координат. Використовуйте формат: 'широта, довгота', наприклад '49.9935, 36.2304'",
+                detail="Некоректний формат координат. Формат: 'широта, довгота'",
             )
 
-    # Перевірка кількості місць
-    if request.capacity_total < 10:
-        raise HTTPException(status_code=400, detail="Мінімальна кількість місць у госпіталі — 10")
+    if "capacity_total" in update_data:
+        if update_data["capacity_total"] < 10:
+            raise HTTPException(status_code=400, detail="Мінімальна кількість місць у госпіталі — 10")
 
-    # Оновлення пароля
-    if request.password:
-        hospital.password = bcrypt.hashpw(request.password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
+    if "password" in update_data:
+        hashed_password = bcrypt.hashpw(update_data["password"].encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
+        hospital.password = hashed_password
+        del update_data["password"]
 
-    # Інші поля
-    for field, value in request.dict(exclude_unset=True).items():
-        if field != "password":
-            setattr(hospital, field, value)
+    for field, value in update_data.items():
+        setattr(hospital, field, value)
 
     db.commit()
-    return headquarters_schemas.DetailResponse(detail="Госпіталь оновлено")
+    return headquarters_schemas.DetailResponse(detail="Дані госпіталю оновлено")
 
 @router.delete("/hospitals/{hospital_id}", response_model=headquarters_schemas.DetailResponse)
 def delete_hospital(hospital_id: int, db: Session = Depends(get_db), current_user: dict = Depends(role_required(["headquarters"]))):

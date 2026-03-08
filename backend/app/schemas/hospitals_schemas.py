@@ -20,9 +20,6 @@ class PatientItem(BaseModel):
     iot_serial: str
     metrics: Optional[PatientMetrics] = None
 
-class AllPatientsResponse(BaseModel):
-    patients: List[PatientItem]
-
 class AddDiagnosisRequest(BaseModel):
     soldier_id: int
     diagnosis_text: str
@@ -33,9 +30,6 @@ class DiagnosisItem(BaseModel):
     diagnosis_text: str
     severity: str
     date_diagnosed: datetime
-
-class AllDiagnosesResponse(BaseModel):
-    diagnoses: List[DiagnosisItem]
 
 class DetailResponse(BaseModel):
     detail: str

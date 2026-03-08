@@ -45,11 +45,5 @@ class SoldierItem(BaseModel):
     metrics: Optional[SoldierMetrics] = None
     hospital_id: Optional[int] = None
 
-class AllPointsResponse(BaseModel):
-    points: List[EvacuationPoint]
-
-class AllSoldiersResponse(BaseModel):
-    soldiers: List[SoldierItem]
-
 class DetailResponse(BaseModel):
     detail: str
