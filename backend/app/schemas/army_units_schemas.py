@@ -27,6 +27,7 @@ class EvacuationPoint(BaseModel):
     id: int
     name: str
     coordinates: str  # формат: "lat, lon"
+    description: Optional[str] = None
 
 class SoldierMetrics(BaseModel):
     battery_percent: int

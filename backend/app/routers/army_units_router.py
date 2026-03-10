@@ -162,7 +162,8 @@ def get_all_points(db: Session = Depends(get_db), current_user: dict = Depends(r
         army_units_schemas.EvacuationPoint(
             id=p.id,
             name=p.name,
-            coordinates=p.coordinates
+            coordinates=p.coordinates,
+            description=p.description
         )
         for p in points
     ]
