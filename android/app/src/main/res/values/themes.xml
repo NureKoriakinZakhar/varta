@@ -1,0 +1,11 @@
+<resources>
+    <style name="Base.Theme" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:colorBackground">@color/dark_gray</item>
+
+        <item name="android:textSelectHandle">@drawable/bg_handle</item>
+        <item name="android:textSelectHandleLeft">@drawable/bg_handle</item>
+        <item name="android:textSelectHandleRight">@drawable/bg_handle</item>
+    </style>
+</resources>

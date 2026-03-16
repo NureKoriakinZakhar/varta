@@ -1,0 +1,291 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/dark_gray">
+
+    <TextView
+        android:id="@+id/text_tittle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/e_ukraine_bold"
+        android:gravity="start"
+        android:text="@string/soldiers_about_tittle"
+        android:textColor="@color/white"
+        android:textSize="24sp"
+        app:layout_constraintEnd_toEndOf="@id/gl_ver_end"
+        app:layout_constraintStart_toStartOf="@id/gl_ver_start"
+        app:layout_constraintTop_toTopOf="@+id/gl_hor_top" />
+
+    <ImageView
+        android:id="@+id/close"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:padding="5dp"
+        android:background="@drawable/frame_blue"
+        android:src="@drawable/img_cross"
+        app:layout_constraintDimensionRatio="1:1"
+        app:layout_constraintEnd_toEndOf="@id/gl_ver_end"
+        app:layout_constraintTop_toTopOf="@+id/text_tittle"
+        app:layout_constraintBottom_toBottomOf="@+id/text_tittle"/>
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/delete"
+        android:layout_width="0dp"
+        android:layout_height="45dp"
+        android:background="@drawable/frame_red"
+        android:fontFamily="@font/e_ukraine_regular"
+        android:gravity="center"
+        android:stateListAnimator="@null"
+        android:text="@string/soldiers_about_delete"
+        android:textAllCaps="false"
+        android:textColor="@color/white"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toTopOf="@+id/gl_hor_button"
+        app:layout_constraintEnd_toEndOf="@id/gl_ver_end"
+        app:layout_constraintStart_toStartOf="@id/gl_ver_start" />
+
+    <ScrollView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="20dp"
+        android:fillViewport="true"
+        android:scrollbars="none"
+        app:layout_constraintBottom_toTopOf="@+id/delete"
+        app:layout_constraintEnd_toEndOf="@id/gl_ver_end"
+        app:layout_constraintStart_toStartOf="@id/gl_ver_start"
+        app:layout_constraintTop_toBottomOf="@+id/text_tittle">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="16dp">
+
+            <TextView
+                android:id="@+id/tittle_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/e_ukraine_regular"
+                android:text="@string/soldiers_about_name"
+                android:textColor="@color/white"
+                android:textSize="12sp"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:background="@drawable/bg_edit_text"
+                android:fontFamily="@font/e_ukraine_regular"
+                android:gravity="center_vertical"
+                android:minHeight="40dp"
+                android:paddingHorizontal="15dp"
+                android:textColor="@color/white"
+                android:textSize="14sp"
+                app:layout_constraintTop_toBottomOf="@+id/tittle_name"
+                tools:text="-" />
+
+            <TextView
+                android:id="@+id/tittle_rank"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:fontFamily="@font/e_ukraine_regular"
+                android:text="@string/soldiers_about_rank"
+                android:textColor="@color/white"
+                android:textSize="12sp"
+                app:layout_constraintTop_toBottomOf="@+id/name" />
+
+            <TextView
+                android:id="@+id/rank"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:background="@drawable/bg_edit_text"
+                android:fontFamily="@font/e_ukraine_regular"
+                android:gravity="center_vertical"
+                android:minHeight="40dp"
+                android:paddingHorizontal="15dp"
+                android:textColor="@color/white"
+                android:textSize="14sp"
+                app:layout_constraintTop_toBottomOf="@+id/tittle_rank"
+                tools:text="-" />
+
+            <TextView
+                android:id="@+id/tittle_birth"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:fontFamily="@font/e_ukraine_regular"
+                android:text="@string/soldiers_about_birth"
+                android:textColor="@color/white"
+                android:textSize="12sp"
+                app:layout_constraintTop_toBottomOf="@+id/rank" />
+
+            <TextView
+                android:id="@+id/birth_date"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:background="@drawable/bg_edit_text"
+                android:fontFamily="@font/e_ukraine_regular"
+                android:gravity="center_vertical"
+                android:minHeight="40dp"
+                android:paddingHorizontal="15dp"
+                android:textColor="@color/white"
+                android:textSize="14sp"
+                app:layout_constraintTop_toBottomOf="@+id/tittle_birth"
+                tools:text="-" />
+
+            <TextView
+                android:id="@+id/tittle_status"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:fontFamily="@font/e_ukraine_regular"
+                android:text="@string/soldiers_about_status"
+                android:textColor="@color/white"
+                android:textSize="12sp"
+                app:layout_constraintTop_toBottomOf="@+id/birth_date" />
+
+            <TextView
+                android:id="@+id/status"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:background="@drawable/bg_edit_text"
+                android:fontFamily="@font/e_ukraine_regular"
+                android:gravity="center_vertical"
+                android:minHeight="40dp"
+                android:paddingHorizontal="15dp"
+                android:textColor="@color/white"
+                android:textSize="14sp"
+                app:layout_constraintTop_toBottomOf="@+id/tittle_status"
+                tools:text="-" />
+
+            <TextView
+                android:id="@+id/tittle_iot"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:fontFamily="@font/e_ukraine_regular"
+                android:text="@string/soldiers_about_iot"
+                android:textColor="@color/white"
+                android:textSize="12sp"
+                app:layout_constraintTop_toBottomOf="@+id/status" />
+
+            <TextView
+                android:id="@+id/iot_serial"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:background="@drawable/bg_edit_text"
+                android:fontFamily="@font/e_ukraine_regular"
+                android:gravity="center_vertical"
+                android:minHeight="40dp"
+                android:paddingHorizontal="15dp"
+                android:textColor="@color/white"
+                android:textSize="14sp"
+                app:layout_constraintTop_toBottomOf="@+id/tittle_iot"
+                tools:text="-" />
+
+            <androidx.constraintlayout.widget.Group
+                android:id="@+id/group_metrics"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:constraint_referenced_ids="tittle_metrics, metrics_details" />
+
+            <TextView
+                android:id="@+id/tittle_metrics"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:fontFamily="@font/e_ukraine_regular"
+                android:text="@string/soldiers_about_metrics"
+                android:textColor="@color/white"
+                android:textSize="12sp"
+                app:layout_constraintTop_toBottomOf="@+id/iot_serial" />
+
+            <TextView
+                android:id="@+id/metrics_details"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:background="@drawable/bg_edit_text"
+                android:fontFamily="@font/e_ukraine_regular"
+                android:gravity="center_vertical|start"
+                android:lineSpacingExtra="6dp"
+                android:minHeight="40dp"
+                android:paddingHorizontal="15dp"
+                android:paddingVertical="12dp"
+                android:textColor="@color/white"
+                android:textSize="14sp"
+                app:layout_constraintTop_toBottomOf="@+id/tittle_metrics"
+                tools:text="Координати: -\nБатарея: -%\nТемпература: -°C\nПульс: -" />
+
+            <androidx.constraintlayout.widget.Group
+                android:id="@+id/group_hospital"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:constraint_referenced_ids="tittle_hospital, hospital_id" />
+
+            <TextView
+                android:id="@+id/tittle_hospital"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:fontFamily="@font/e_ukraine_regular"
+                android:text="@string/soldiers_about_hospital"
+                android:textColor="@color/white"
+                android:textSize="12sp"
+                app:layout_constraintTop_toBottomOf="@+id/metrics_details" />
+
+            <TextView
+                android:id="@+id/hospital_id"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:background="@drawable/bg_edit_text"
+                android:fontFamily="@font/e_ukraine_regular"
+                android:gravity="center_vertical"
+                android:minHeight="40dp"
+                android:paddingHorizontal="15dp"
+                android:textColor="@color/white"
+                android:textSize="14sp"
+                app:layout_constraintTop_toBottomOf="@+id/tittle_hospital"
+                tools:text="-" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/gl_hor_top"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.05" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/gl_ver_start"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.05" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/gl_ver_end"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.95" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/gl_hor_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.9" />
+</androidx.constraintlayout.widget.ConstraintLayout>

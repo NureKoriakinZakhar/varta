@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph_auth"
+    app:startDestination="@id/fragment_map">
+
+    <fragment
+        android:id="@+id/fragment_map"
+        android:name="com.android.varta.presentation.ui.fragments.MapFragment">
+
+        <action
+            android:id="@+id/action_map_to_soldier_about"
+            app:destination="@id/fragment_soldier_about"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+
+        <action
+            android:id="@+id/action_map_to_point_about"
+            app:destination="@id/fragment_point_about"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/fragment_soldier_list"
+        android:name="com.android.varta.presentation.ui.fragments.SoldierListFragment">
+
+        <action
+            android:id="@+id/action_soldier_list_to_about"
+            app:destination="@id/fragment_soldier_about"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+
+        <action
+            android:id="@+id/action_soldier_list_to_add"
+            app:destination="@id/fragment_soldier_add"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/fragment_soldier_about"
+        android:name="com.android.varta.presentation.ui.fragments.SoldierAboutFragment">
+
+        <argument
+            android:name="soldier"
+            app:argType="com.android.varta.domain.model.soldier.Soldier" />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/fragment_soldier_add"
+        android:name="com.android.varta.presentation.ui.fragments.SoldierAddFragment"/>
+
+    <fragment
+        android:id="@+id/fragment_point_list"
+        android:name="com.android.varta.presentation.ui.fragments.PointListFragment">
+
+        <action
+            android:id="@+id/action_point_list_to_about"
+            app:destination="@id/fragment_point_about"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+
+        <action
+            android:id="@+id/action_point_list_to_add"
+            app:destination="@id/fragment_point_add"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/fragment_point_about"
+        android:name="com.android.varta.presentation.ui.fragments.PointAboutFragment">
+
+        <argument
+            android:name="evacuationPoint"
+            app:argType="com.android.varta.domain.model.point.Point" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/fragment_point_add"
+        android:name="com.android.varta.presentation.ui.fragments.PointAddFragment"/>
+</navigation>

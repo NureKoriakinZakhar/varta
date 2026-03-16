@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/text_tittle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/e_ukraine_bold"
+        android:gravity="start"
+        android:text="@string/point_list_tittle"
+        android:textColor="@color/white"
+        android:textSize="24sp"
+        app:layout_constraintStart_toStartOf="@id/gl_ver_start"
+        app:layout_constraintTop_toTopOf="@+id/gl_hor_top" />
+
+    <ImageView
+        android:id="@+id/add"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:padding="5dp"
+        android:background="@drawable/frame_blue"
+        android:src="@drawable/img_medical"
+        app:layout_constraintDimensionRatio="1:1"
+        app:layout_constraintEnd_toEndOf="@id/gl_ver_end"
+        app:layout_constraintTop_toTopOf="@+id/text_tittle"
+        app:layout_constraintBottom_toBottomOf="@+id/text_tittle"/>
+
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="15dp"
+        android:background="@drawable/bg_nav_bar"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingHorizontal="10dp"
+        app:layout_constraintEnd_toStartOf="@+id/gl_ver_end"
+        app:layout_constraintHeight_percent="0.04"
+        app:layout_constraintStart_toStartOf="@+id/gl_ver_start"
+        app:layout_constraintTop_toBottomOf="@+id/text_tittle">
+
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_marginEnd="12dp"
+            android:padding="2dp"
+            android:src="@drawable/img_search" />
+
+        <EditText
+            android:id="@+id/search"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@android:color/transparent"
+            android:fontFamily="@font/e_ukraine_regular"
+            android:gravity="center_vertical"
+            android:hint="@string/point_list_search"
+            android:inputType="text"
+            android:lines="1"
+            android:maxLength="20"
+            android:textColor="@color/white"
+            android:textColorHint="@color/light_gray"
+            android:textSize="14sp" />
+
+        <ImageView
+            android:id="@+id/cross"
+            android:layout_width="20dp"
+            android:layout_height="match_parent"
+            android:layout_marginEnd="6dp"
+            android:padding="2dp"
+            android:visibility="invisible"
+            android:src="@drawable/img_cross_small" />
+    </LinearLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/points_list"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="15dp"
+        android:clipToPadding="false"
+        android:overScrollMode="never"
+        android:scrollbars="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/gl_ver_end"
+        app:layout_constraintStart_toStartOf="@+id/gl_ver_start"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
+
+    <com.facebook.shimmer.ShimmerFrameLayout
+        android:id="@+id/shimmer_container"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="15dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/gl_ver_end"
+        app:layout_constraintStart_toStartOf="@+id/gl_ver_start"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout"
+        app:shimmer_auto_start="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <include layout="@layout/item_point_shimmer" />
+            <include layout="@layout/item_point_shimmer" />
+            <include layout="@layout/item_point_shimmer" />
+            <include layout="@layout/item_point_shimmer" />
+            <include layout="@layout/item_point_shimmer" />
+            <include layout="@layout/item_point_shimmer" />
+            <include layout="@layout/item_point_shimmer" />
+            <include layout="@layout/item_point_shimmer" />
+            <include layout="@layout/item_point_shimmer" />
+            <include layout="@layout/item_point_shimmer" />
+            <include layout="@layout/item_point_shimmer" />
+            <include layout="@layout/item_point_shimmer" />
+        </LinearLayout>
+
+    </com.facebook.shimmer.ShimmerFrameLayout>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/gl_hor_top"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.05" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/gl_ver_start"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.05" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/gl_ver_end"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.95" />
+</androidx.constraintlayout.widget.ConstraintLayout>

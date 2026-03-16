@@ -1,0 +1,63 @@
+<resources>
+    <string name="app_name">Varta</string>
+    <string name="text_exit">Натисніть ще раз для виходу</string>
+
+    <string name="dialog_error_title">Помилка</string>
+    <string name="dialog_error_message">Щось пішло не так. Перевірте підключення до мережі та спробуйте ще раз</string>
+    <string name="dialog_error_ok">Зрозуміло</string>
+
+    <string name="dialog_delete_point_title">Видалити точку?</string>
+    <string name="dialog_delete_point_message">Ви впевнені, що хочете видалити точку? Цю дію неможливо буде скасувати</string>
+    <string name="dialog_delete_soldier_title">Видалити солдата?</string>
+    <string name="dialog_delete_soldier_message">Ви впевнені, що хочете видалити солдата? Всі дані будуть втрачені</string>
+    <string name="dialog_delete_yes">Так</string>
+    <string name="dialog_delete_no">Ні</string>
+
+    <string name="login_email">Електронна пошта</string>
+    <string name="login_password">Пароль</string>
+    <string name="login_button">Вхід</string>
+    <string name="login_support">Підтримка та відгуки</string>
+
+    <string name="nav_bar_map">Мапа</string>
+    <string name="nav_bar_soldiers">Солдати</string>
+    <string name="nav_bar_points">Евакуація</string>
+
+    <string name="soldier_list_tittle">Солдати</string>
+    <string name="soldier_list_search">Пошук соладтів...</string>
+
+    <string name="soldiers_about_tittle">Перегляд солдата</string>
+    <string name="soldiers_about_name">ПІБ</string>
+    <string name="soldiers_about_rank">Звання</string>
+    <string name="soldiers_about_birth">Дата народження</string>
+    <string name="soldiers_about_status">Статус</string>
+    <string name="soldiers_about_iot">Серійний номер датчика</string>
+    <string name="soldiers_about_hospital">ID Шпиталю</string>
+    <string name="soldiers_about_metrics">Метрики</string>
+    <string name="soldiers_about_delete">Видалити солдата</string>
+
+    <string name="point_list_tittle">Точки евакуації</string>
+    <string name="point_list_search">Пошук точок евакуації...</string>
+
+    <string name="point_about_tittle">Про точку</string>
+    <string name="point_about_id">ID Точки</string>
+    <string name="point_about_name">Назва</string>
+    <string name="point_about_map">Позиція точки на мапі</string>
+    <string name="point_about_description">Опис</string>
+    <string name="point_about_delete">Видалити точку</string>
+
+    <string name="soldier_add_tittle">Додавання солдата</string>
+    <string name="soldier_add_button">Додати солдата</string>
+    <string name="soldier_add_first_name">Ім’я</string>
+    <string name="soldier_add_last_name">Прізвище</string>
+    <string name="soldier_add_middle_name">По батькові</string>
+    <string name="soldier_add_birth_day">День народження</string>
+    <string name="soldier_add_birth_day_hint">ДД</string>
+    <string name="soldier_add_birth_month_hint">ММ</string>
+    <string name="soldier_add_birth_year_hint">РРРР</string>
+    <string name="soldier_add_rank">Звання</string>
+    <string name="soldier_add_iot_serial">Серійний номер IoT</string>
+
+    <string name="point_add_tittle">Додавання точки</string>
+    <string name="point_add_button">Додати точку евакуації</string>
+    <string name="point_add_coordinates">Вибір позиції точки</string>
+</resources>
