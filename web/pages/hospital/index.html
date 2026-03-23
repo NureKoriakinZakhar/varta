@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VARTA — Пацієнти</title>
+  <link rel="stylesheet" href="../../css/tokens.css" />
+  <link rel="stylesheet" href="hospital.css" />
+</head>
+<body>
+
+  <header class="topbar">
+    <div class="topbar__left">
+      <img class="topbar__logo" src="../../assets/logo.webp" alt="VARTA" />
+    </div>
+    <div class="topbar__center">
+      <h1 class="topbar__title">Пацієнти госпіталю</h1>
+    </div>
+    <div class="topbar__right">
+      <button class="btn-logout" id="logoutBtn" title="Вийти">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/>
+          <polyline points="16 17 21 12 16 7"/>
+          <line x1="21" y1="12" x2="9" y2="12"/>
+        </svg>
+        Вийти
+      </button>
+    </div>
+  </header>
+
+  <main class="main">
+
+    <div class="toolbar">
+      <div class="search-wrap">
+        <svg class="search-wrap__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <input class="search-wrap__input" type="text" id="searchInput" placeholder="Пошук за ПІБ..." />
+      </div>
+      <div class="filter-group">
+        <button class="filter-btn active" data-status="all">Всі</button>
+        <button class="filter-btn" data-status="Good">
+          <span class="dot dot--good"></span>Норма
+        </button>
+        <button class="filter-btn" data-status="Warning">
+          <span class="dot dot--warning"></span>Увага
+        </button>
+        <button class="filter-btn" data-status="Critical">
+          <span class="dot dot--critical"></span>Критично
+        </button>
+      </div>
+    </div>
+
+    <div class="stats-row" id="statsRow">
+      <div class="stat-card">
+        <span class="stat-card__value" id="statTotal">—</span>
+        <span class="stat-card__label">Всього</span>
+      </div>
+      <div class="stat-card stat-card--good">
+        <span class="stat-card__value" id="statGood">—</span>
+        <span class="stat-card__label">Норма</span>
+      </div>
+      <div class="stat-card stat-card--warning">
+        <span class="stat-card__value" id="statWarning">—</span>
+        <span class="stat-card__label">Увага</span>
+      </div>
+      <div class="stat-card stat-card--critical">
+        <span class="stat-card__value" id="statCritical">—</span>
+        <span class="stat-card__label">Критично</span>
+      </div>
+    </div>
+
+    <div class="patients-list" id="patientsList">
+      <div class="skeleton-list" id="skeletonList">
+        <div class="skeleton-card"></div>
+        <div class="skeleton-card"></div>
+        <div class="skeleton-card"></div>
+        <div class="skeleton-card"></div>
+      </div>
+    </div>
+
+    <p class="empty-msg" id="emptyMsg" hidden>Пацієнтів не знайдено</p>
+    <p class="error-msg" id="errorMsg" hidden></p>
+
+  </main>
+
+  <script src="../../js/api.js"></script>
+  <script src="hospital.js"></script>
+</body>
+</html>

@@ -1,0 +1,18 @@
+:root {
+  --color-bg: #1b2131;
+  --color-surface: #242c3d;
+  --color-surface-hover: #2a3347;
+  --color-border: #2e3a52;
+  --color-accent: #4a6cf7;
+  --color-accent-hover: #3a5ce6;
+  --color-text-primary: #e8ecf4;
+  --color-text-secondary: #8a96b0;
+  --color-text-placeholder: #5a6480;
+  --color-error: #e05454;
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+
+  --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}

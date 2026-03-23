@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VARTA — Вхід</title>
+  <link rel="stylesheet" href="../../css/tokens.css" />
+  <link rel="stylesheet" href="login.css" />
+</head>
+<body>
+
+  <div class="login-wrapper">
+    <header class="logo" aria-label="VARTA">
+      <img class="logo__img" src="../../assets/logo.webp" alt="VARTA логотип" />
+    </header>
+
+    <form class="login-form" id="loginForm" novalidate>
+      <div class="field">
+        <input
+          class="field__input"
+          type="email"
+          id="email"
+          name="username"
+          placeholder="Електронна пошта"
+          autocomplete="email"
+          required
+        />
+      </div>
+
+      <div class="field">
+        <input
+          class="field__input field__input--password"
+          type="password"
+          id="password"
+          name="password"
+          placeholder="Пароль"
+          autocomplete="current-password"
+          required
+        />
+        <button type="button" class="field__toggle" id="togglePassword" aria-label="Показати пароль">
+          <svg id="iconEyeOff" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94"/>
+            <path d="M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19"/>
+            <line x1="1" y1="1" x2="23" y2="23"/>
+          </svg>
+          <svg id="iconEye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="display:none">
+            <path d="M1 12S5 4 12 4s11 8 11 8-4 8-11 8S1 12 1 12z"/>
+            <circle cx="12" cy="12" r="3"/>
+          </svg>
+        </button>
+      </div>
+
+      <p class="error-msg" id="errorMsg" role="alert"></p>
+
+      <button type="submit" class="btn-login" id="submitBtn">Вхід</button>
+    </form>
+  </div>
+
+  <footer class="support">
+    <p class="support__title">Підтримка та відгуки</p>
+    <div class="support__row">
+      <span class="support__label">E-mail:</span>
+      <span class="support__value">support@mil.gov.ua</span>
+      <span class="support__label">Telegram:</span>
+      <span class="support__value">+380 66 123 45 67</span>
+    </div>
+  </footer>
+
+  <script src="login.js"></script>
+</body>
+</html>
