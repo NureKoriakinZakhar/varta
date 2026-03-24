@@ -84,14 +84,21 @@ function renderPatient(p) {
 
   const card = document.createElement('div');
   card.className = `patient-card patient-card--${cls}`;
-  card.dataset.id = p.soldier_id;
+  card.dataset.id   = p.soldier_id;
+  card.dataset.name = p.full_name;
   card.innerHTML = `
     <span class="status-dot status-dot--${cls}" title="${statusLabel(p.status)}"></span>
     <div class="patient-info">
       <span class="patient-info__name">${p.full_name}</span>
       <span class="patient-info__meta">${p.rank} · ${p.birth_date} · IoT: ${p.iot_serial}</span>
     </div>
-    ${metricsHtml}
+    <div class="patient-card-right">
+      ${metricsHtml}
+      <div class="patient-actions">
+        <button class="patient-actions__btn patient-actions__btn--diagnoses" data-action="diagnoses">Діагнози</button>
+        <button class="patient-actions__btn patient-actions__btn--discharge" data-action="discharge">Виписати</button>
+      </div>
+    </div>
   `;
   return card;
 }
@@ -157,3 +164,175 @@ async function loadPatients() {
 }
 
 loadPatients();
+
+const admitSoldierId = document.getElementById('admitSoldierId');
+const admitBtn       = document.getElementById('admitBtn');
+const admitMsg       = document.getElementById('admitMsg');
+
+function showAdmitMsg(text, type) {
+  admitMsg.textContent = text;
+  admitMsg.className = `admit-panel__msg admit-panel__msg--${type}`;
+  admitMsg.hidden = false;
+}
+
+async function submitAdmit() {
+  const id = parseInt(admitSoldierId.value, 10);
+  if (!id || id < 1) {
+    showAdmitMsg('Введіть коректний ID військовослужбовця', 'error');
+    return;
+  }
+
+  admitBtn.disabled = true;
+  admitBtn.textContent = 'Зачекайте...';
+  admitMsg.hidden = true;
+
+  try {
+    const res = await apiFetch('/hospitals/accept_patient', {
+      method: 'POST',
+      body: JSON.stringify({ soldier_id: id }),
+    });
+
+    if (!res) return;
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      showAdmitMsg(data.detail || 'Помилка сервера', 'error');
+    } else {
+      showAdmitMsg(data.detail, 'success');
+      admitSoldierId.value = '';
+      await loadPatients();
+    }
+  } catch (e) {
+    showAdmitMsg(`Помилка: ${e.message}`, 'error');
+  } finally {
+    admitBtn.disabled = false;
+    admitBtn.textContent = 'Прийняти';
+  }
+}
+
+admitBtn.addEventListener('click', submitAdmit);
+
+admitSoldierId.addEventListener('keydown', e => {
+  if (e.key === 'Enter') submitAdmit();
+});
+
+const dischargeModal      = document.getElementById('dischargeModal');
+const dischargeModalName  = document.getElementById('dischargeModalName');
+const dischargeCancelBtn  = document.getElementById('dischargeCancelBtn');
+const dischargeConfirmBtn = document.getElementById('dischargeConfirmBtn');
+
+const diagnosesModal      = document.getElementById('diagnosesModal');
+const diagnosesModalTitle = document.getElementById('diagnosesModalTitle');
+const diagnosesModalBody  = document.getElementById('diagnosesModalBody');
+const diagnosesCloseBtn   = document.getElementById('diagnosesCloseBtn');
+
+let pendingDischargeId = null;
+
+function openDischargeModal(id, name) {
+  pendingDischargeId = id;
+  dischargeModalName.textContent = name;
+  dischargeModal.hidden = false;
+}
+
+function closeDischargeModal() {
+  dischargeModal.hidden = true;
+  pendingDischargeId = null;
+}
+
+dischargeCancelBtn.addEventListener('click', closeDischargeModal);
+
+dischargeModal.addEventListener('click', e => {
+  if (e.target === dischargeModal) closeDischargeModal();
+});
+
+dischargeConfirmBtn.addEventListener('click', async () => {
+  if (!pendingDischargeId) return;
+
+  dischargeConfirmBtn.disabled = true;
+  dischargeConfirmBtn.textContent = 'Зачекайте...';
+
+  try {
+    const res = await apiFetch('/hospitals/discharge_patient', {
+      method: 'POST',
+      body: JSON.stringify({ soldier_id: parseInt(pendingDischargeId, 10) }),
+    });
+
+    if (!res) return;
+
+    closeDischargeModal();
+
+    if (res.ok) {
+      await loadPatients();
+    }
+  } catch (e) {
+  } finally {
+    dischargeConfirmBtn.disabled = false;
+    dischargeConfirmBtn.textContent = 'Виписати';
+  }
+});
+
+function severityClass(s) {
+  if (s === 'Легке')    return 'diag--mild';
+  if (s === 'Середнє')  return 'diag--moderate';
+  if (s === 'Важке')    return 'diag--severe';
+  if (s === 'Критичне') return 'diag--critical';
+  return '';
+}
+
+function formatDate(iso) {
+  return new Date(iso).toLocaleDateString('uk-UA', { day: '2-digit', month: '2-digit', year: 'numeric' });
+}
+
+async function openDiagnosesModal(id, name) {
+  diagnosesModalTitle.textContent = name;
+  diagnosesModalBody.innerHTML = '<p class="diag-loading">Завантаження...</p>';
+  diagnosesModal.hidden = false;
+
+  try {
+    const res = await apiFetch(`/hospitals/diagnoses/${id}`);
+    if (!res) return;
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      diagnosesModalBody.innerHTML = `<p class="diag-error">${data.detail || 'Помилка'}</p>`;
+      return;
+    }
+
+    if (!data.length) {
+      diagnosesModalBody.innerHTML = '<p class="diag-empty">Діагнози відсутні</p>';
+      return;
+    }
+
+    diagnosesModalBody.innerHTML = data.map(d => `
+      <div class="diag-item">
+        <div class="diag-item__header">
+          <span class="diag-item__severity ${severityClass(d.severity)}">${d.severity}</span>
+          <span class="diag-item__date">${formatDate(d.date_diagnosed)}</span>
+        </div>
+        <p class="diag-item__text">${d.diagnosis_text}</p>
+      </div>
+    `).join('');
+
+  } catch (e) {
+    diagnosesModalBody.innerHTML = `<p class="diag-error">Помилка: ${e.message}</p>`;
+  }
+}
+
+diagnosesCloseBtn.addEventListener('click', () => { diagnosesModal.hidden = true; });
+
+diagnosesModal.addEventListener('click', e => {
+  if (e.target === diagnosesModal) diagnosesModal.hidden = true;
+});
+
+patientsList.addEventListener('click', e => {
+  const btn  = e.target.closest('[data-action]');
+  if (!btn) return;
+  const card = btn.closest('.patient-card');
+  const id   = card.dataset.id;
+  const name = card.dataset.name;
+
+  if (btn.dataset.action === 'diagnoses') openDiagnosesModal(id, name);
+  if (btn.dataset.action === 'discharge') openDischargeModal(id, name);
+});

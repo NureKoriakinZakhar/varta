@@ -77,7 +77,7 @@ body {
 
 .main {
   flex: 1;
-  max-width: 1100px;
+  max-width: 1300px;
   width: 100%;
   margin: 0 auto;
   padding: 28px 24px 48px;
@@ -203,10 +203,123 @@ body {
   color: var(--color-text-secondary);
 }
 
+.content-layout {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: 20px;
+  align-items: start;
+}
+
+.list-column {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+}
+
 .patients-list {
   display: flex;
   flex-direction: column;
   gap: 12px;
+}
+
+.admit-panel {
+  background-color: var(--color-surface);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 22px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  position: sticky;
+  top: calc(64px + 28px);
+}
+
+.admit-panel__title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.admit-panel__divider {
+  height: 1px;
+  background-color: var(--color-border);
+}
+
+.admit-panel__field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.admit-panel__label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.admit-panel__input {
+  width: 100%;
+  background-color: var(--color-bg);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  font-size: 15px;
+  color: var(--color-text-primary);
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.admit-panel__input::placeholder {
+  color: var(--color-text-placeholder);
+}
+
+.admit-panel__input:focus {
+  border-color: var(--color-accent);
+}
+
+
+.admit-panel__btn {
+  width: 100%;
+  background-color: var(--color-accent);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 11px 16px;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s, opacity 0.2s;
+}
+
+.admit-panel__btn:hover {
+  background-color: var(--color-accent-hover);
+}
+
+.admit-panel__btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.admit-panel__msg {
+  font-size: 13px;
+  line-height: 1.5;
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+}
+
+.admit-panel__msg--success {
+  color: #34c759;
+  background: rgba(52, 199, 89, 0.08);
+  border: 1px solid rgba(52, 199, 89, 0.25);
+}
+
+.admit-panel__msg--error {
+  color: var(--color-error);
+  background: rgba(224, 84, 84, 0.08);
+  border: 1px solid rgba(224, 84, 84, 0.25);
 }
 
 .patient-card {
@@ -220,6 +333,50 @@ body {
   gap: 18px;
   transition: border-color 0.2s;
   cursor: default;
+}
+
+.patient-card-right {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.patient-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.patient-actions__btn {
+  background: none;
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  padding: 5px 12px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 0.2s, border-color 0.2s, color 0.2s;
+}
+
+.patient-actions__btn--diagnoses {
+  color: var(--color-accent);
+  border-color: rgba(74, 108, 247, 0.4);
+}
+
+.patient-actions__btn--diagnoses:hover {
+  background-color: rgba(74, 108, 247, 0.1);
+  border-color: var(--color-accent);
+}
+
+.patient-actions__btn--discharge {
+  color: var(--color-error);
+  border-color: rgba(224, 84, 84, 0.4);
+}
+
+.patient-actions__btn--discharge:hover {
+  background-color: rgba(224, 84, 84, 0.1);
+  border-color: var(--color-error);
 }
 
 .patient-card:hover {
@@ -336,9 +493,200 @@ body {
   font-size: 15px;
 }
 
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  padding: 24px;
+  backdrop-filter: blur(2px);
+}
+
+.modal-overlay:not([hidden]) {
+  display: flex;
+}
+
+.modal {
+  background-color: var(--color-surface);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 28px 28px 24px;
+  width: 100%;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.modal--wide {
+  max-width: 580px;
+  max-height: 80vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.modal__title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.modal__text {
+  font-size: 14px;
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+}
+
+.modal__text strong {
+  color: var(--color-text-primary);
+}
+
+.modal__close {
+  background: none;
+  border: none;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  transition: color 0.2s;
+}
+
+.modal__close:hover { color: var(--color-text-primary); }
+.modal__close svg { width: 18px; height: 18px; }
+
+.modal__actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.modal__btn {
+  border-radius: var(--radius-sm);
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1.5px solid var(--color-border);
+  transition: background-color 0.2s, border-color 0.2s, opacity 0.2s;
+}
+
+.modal__btn--cancel {
+  background: none;
+  color: var(--color-text-secondary);
+}
+
+.modal__btn--cancel:hover {
+  color: var(--color-text-primary);
+  border-color: var(--color-text-secondary);
+}
+
+.modal__btn--danger {
+  background-color: var(--color-error);
+  color: #fff;
+  border-color: var(--color-error);
+}
+
+.modal__btn--danger:hover { background-color: #c94444; }
+.modal__btn--danger:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.modal__body {
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-right: 4px;
+}
+
+.diag-item {
+  background-color: var(--color-bg);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.diag-item__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.diag-item__severity {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.diag--mild     { background: rgba(52, 199, 89, 0.12);  color: #34c759; }
+.diag--moderate { background: rgba(255, 159, 10, 0.12); color: #ff9f0a; }
+.diag--severe   { background: rgba(255, 100, 30, 0.12); color: #ff641e; }
+.diag--critical { background: rgba(224, 84, 84, 0.12);  color: #e05454; }
+
+.diag-item__date {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+}
+
+.diag-item__text {
+  font-size: 14px;
+  color: var(--color-text-primary);
+  line-height: 1.5;
+}
+
+.diag-loading,
+.diag-empty {
+  font-size: 14px;
+  color: var(--color-text-secondary);
+  text-align: center;
+  padding: 24px 0;
+}
+
+.diag-error {
+  font-size: 14px;
+  color: var(--color-error);
+  text-align: center;
+  padding: 16px;
+}
+
+@media (max-width: 900px) {
+  .content-layout { grid-template-columns: 1fr; }
+  .admit-panel { position: static; }
+}
+
 @media (max-width: 700px) {
   .stats-row { grid-template-columns: repeat(2, 1fr); }
-  .patient-card { grid-template-columns: auto 1fr; }
+  .patient-card {
+    grid-template-columns: auto 1fr;
+    grid-template-rows: auto auto;
+  }
+  .patient-card-right {
+    grid-column: 1 / -1;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
   .patient-metrics { display: none; }
+  .patient-actions {
+    flex-direction: row;
+    gap: 8px;
+  }
   .topbar__title { font-size: 15px; }
 }

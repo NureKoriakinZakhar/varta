@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>VARTA — Пацієнти</title>
   <link rel="stylesheet" href="../../css/tokens.css" />
-  <link rel="stylesheet" href="hospital.css" />
+  <link rel="stylesheet" href="hospital.css?v=7" />
 </head>
 <body>
 
@@ -70,19 +70,60 @@
       </div>
     </div>
 
-    <div class="patients-list" id="patientsList">
-      <div class="skeleton-list" id="skeletonList">
-        <div class="skeleton-card"></div>
-        <div class="skeleton-card"></div>
-        <div class="skeleton-card"></div>
-        <div class="skeleton-card"></div>
+    <div class="content-layout">
+
+      <div class="list-column">
+        <div class="patients-list" id="patientsList">
+          <div class="skeleton-list" id="skeletonList">
+            <div class="skeleton-card"></div>
+            <div class="skeleton-card"></div>
+            <div class="skeleton-card"></div>
+            <div class="skeleton-card"></div>
+          </div>
+        </div>
+        <p class="empty-msg" id="emptyMsg" hidden>Пацієнтів не знайдено</p>
+        <p class="error-msg" id="errorMsg" hidden></p>
       </div>
+
+      <aside class="admit-panel">
+        <h2 class="admit-panel__title">Прийом на лікування</h2>
+        <div class="admit-panel__divider"></div>
+        <div class="admit-panel__field">
+          <label class="admit-panel__label" for="admitSoldierId">ID військовослужбовця</label>
+          <input class="admit-panel__input" type="text" inputmode="numeric" pattern="[0-9]*" id="admitSoldierId" placeholder="Введіть ID..." />
+        </div>
+        <p class="admit-panel__msg" id="admitMsg" hidden></p>
+        <button class="admit-panel__btn" id="admitBtn">Прийняти</button>
+      </aside>
+
     </div>
 
-    <p class="empty-msg" id="emptyMsg" hidden>Пацієнтів не знайдено</p>
-    <p class="error-msg" id="errorMsg" hidden></p>
-
   </main>
+
+  <div class="modal-overlay" id="dischargeModal" hidden>
+    <div class="modal">
+      <h3 class="modal__title">Виписати пацієнта</h3>
+      <p class="modal__text">Ви впевнені, що хочете виписати <strong id="dischargeModalName"></strong>?</p>
+      <div class="modal__actions">
+        <button class="modal__btn modal__btn--cancel" id="dischargeCancelBtn">Скасувати</button>
+        <button class="modal__btn modal__btn--danger" id="dischargeConfirmBtn">Виписати</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="diagnosesModal" hidden>
+    <div class="modal modal--wide">
+      <div class="modal__header">
+        <h3 class="modal__title" id="diagnosesModalTitle"></h3>
+        <button class="modal__close" id="diagnosesCloseBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+      <div class="modal__body" id="diagnosesModalBody"></div>
+    </div>
+  </div>
 
   <script src="../../js/api.js"></script>
   <script src="hospital.js"></script>
