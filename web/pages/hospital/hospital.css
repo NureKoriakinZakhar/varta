@@ -520,21 +520,6 @@ body {
   gap: 16px;
 }
 
-.modal--wide {
-  max-width: 580px;
-  max-height: 80vh;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-}
-
-.modal__header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-}
-
 .modal__title {
   font-size: 16px;
   font-weight: 600;
@@ -550,21 +535,6 @@ body {
 .modal__text strong {
   color: var(--color-text-primary);
 }
-
-.modal__close {
-  background: none;
-  border: none;
-  color: var(--color-text-secondary);
-  cursor: pointer;
-  padding: 4px;
-  display: flex;
-  align-items: center;
-  flex-shrink: 0;
-  transition: color 0.2s;
-}
-
-.modal__close:hover { color: var(--color-text-primary); }
-.modal__close svg { width: 18px; height: 18px; }
 
 .modal__actions {
   display: flex;
@@ -600,71 +570,6 @@ body {
 
 .modal__btn--danger:hover { background-color: #c94444; }
 .modal__btn--danger:disabled { opacity: 0.6; cursor: not-allowed; }
-
-.modal__body {
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  padding-right: 4px;
-}
-
-.diag-item {
-  background-color: var(--color-bg);
-  border: 1.5px solid var(--color-border);
-  border-radius: var(--radius-md);
-  padding: 14px 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.diag-item__header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-}
-
-.diag-item__severity {
-  font-size: 12px;
-  font-weight: 600;
-  padding: 3px 10px;
-  border-radius: 20px;
-  text-transform: uppercase;
-  letter-spacing: 0.4px;
-}
-
-.diag--mild     { background: rgba(52, 199, 89, 0.12);  color: #34c759; }
-.diag--moderate { background: rgba(255, 159, 10, 0.12); color: #ff9f0a; }
-.diag--severe   { background: rgba(255, 100, 30, 0.12); color: #ff641e; }
-.diag--critical { background: rgba(224, 84, 84, 0.12);  color: #e05454; }
-
-.diag-item__date {
-  font-size: 12px;
-  color: var(--color-text-secondary);
-}
-
-.diag-item__text {
-  font-size: 14px;
-  color: var(--color-text-primary);
-  line-height: 1.5;
-}
-
-.diag-loading,
-.diag-empty {
-  font-size: 14px;
-  color: var(--color-text-secondary);
-  text-align: center;
-  padding: 24px 0;
-}
-
-.diag-error {
-  font-size: 14px;
-  color: var(--color-error);
-  text-align: center;
-  padding: 16px;
-}
 
 @media (max-width: 900px) {
   .content-layout { grid-template-columns: 1fr; }

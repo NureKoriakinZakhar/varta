@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VARTA — Діагнози</title>
+  <link rel="stylesheet" href="../../css/tokens.css" />
+  <link rel="stylesheet" href="diagnoses.css" />
+</head>
+<body>
+
+  <header class="topbar">
+    <div class="topbar__left">
+      <img class="topbar__logo" src="../../assets/logo.webp" alt="VARTA" />
+    </div>
+    <div class="topbar__center">
+      <h1 class="topbar__title" id="pageTitle"></h1>
+    </div>
+    <div class="topbar__right">
+      <a class="btn-logout" href="../hospital/index.html">← До пацієнтів</a>
+    </div>
+  </header>
+
+  <main class="main">
+    <div class="content-layout">
+      <section class="list-column" aria-labelledby="listHeading">
+        <h2 class="visually-hidden" id="listHeading">Список діагнозів</h2>
+        <div class="diagnoses-list" id="diagnosesList">
+          <div class="skeleton-list" id="skeletonList">
+            <div class="skeleton-card"></div>
+            <div class="skeleton-card"></div>
+            <div class="skeleton-card"></div>
+          </div>
+        </div>
+        <p class="empty-msg" id="emptyMsg" hidden>Діагнози відсутні</p>
+        <p class="error-msg" id="listErrorMsg" hidden></p>
+      </section>
+
+      <aside class="add-panel" aria-labelledby="formHeading">
+        <h2 class="add-panel__title" id="formHeading">Новий діагноз</h2>
+        <div class="add-panel__divider"></div>
+        <div class="add-panel__field">
+          <label class="add-panel__label" for="diagnosisText">Опис діагнозу</label>
+          <textarea class="add-panel__textarea" id="diagnosisText" rows="1" placeholder="Введіть текст діагнозу..."></textarea>
+        </div>
+        <div class="add-panel__field">
+          <label class="add-panel__label" for="severitySelect">Тяжкість</label>
+          <select class="add-panel__select" id="severitySelect">
+            <option value="Легке">Легке</option>
+            <option value="Середнє" selected>Середнє</option>
+            <option value="Важке">Важке</option>
+            <option value="Критичне">Критичне</option>
+          </select>
+        </div>
+        <p class="add-panel__msg" id="formMsg" hidden></p>
+        <button class="add-panel__btn" id="submitBtn" type="button">Додати діагноз</button>
+      </aside>
+    </div>
+  </main>
+
+  <script src="../../js/api.js"></script>
+  <script src="diagnoses.js"></script>
+</body>
+</html>
