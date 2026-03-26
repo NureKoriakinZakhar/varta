@@ -33,12 +33,42 @@ function setLoading(loading) {
   submitBtn.textContent = loading ? 'Завантаження...' : 'Вхід';
 }
 
+function parseJwtPayload(token) {
+  try {
+    const part = token.split('.')[1];
+    if (!part) return null;
+    const base64 = part.replace(/-/g, '+').replace(/_/g, '/');
+    const pad = base64.length % 4;
+    const padded = pad ? base64 + '='.repeat(4 - pad) : base64;
+    const json = atob(padded);
+    return JSON.parse(json);
+  } catch {
+    return null;
+  }
+}
+
+function formatLoginDetail(detail) {
+  if (typeof detail === 'string') return detail;
+  if (Array.isArray(detail)) {
+    return detail.map((x) => (x && x.msg) || '').filter(Boolean).join(' ') || '';
+  }
+  return '';
+}
+
+function cleanEmail(s) {
+  return s.replace(/[\u200B-\u200D\uFEFF]/g, '').trim();
+}
+
+function stripInvisible(s) {
+  return s.replace(/[\u200B-\u200D\uFEFF]/g, '');
+}
+
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
   hideError();
 
-  const email = emailInput.value.trim();
-  const password = passwordInput.value;
+  const email = cleanEmail(emailInput.value);
+  const password = stripInvisible(passwordInput.value);
 
   if (!email || !password) {
     showError('Будь ласка, заповніть всі поля');
@@ -48,34 +78,58 @@ form.addEventListener('submit', async (e) => {
   setLoading(true);
 
   try {
-    const body = new URLSearchParams({ username: email, password });
+    const body = new URLSearchParams();
+    body.set('username', email);
+    body.set('password', password);
+    body.set('grant_type', 'password');
+
     const response = await fetch(`${API_BASE}/auth/login`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body,
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
+      body: body.toString(),
     });
 
-    const data = await response.json();
-
-    if (!response.ok) {
-      showError(data.detail || 'Невірний email або пароль');
-      return;
-    }
-
-    localStorage.setItem('access_token', data.access_token);
-    localStorage.setItem('role', data.role);
-
-    const routes = {
-      hospital: '../hospital/index.html',
-    };
-
-    const destination = routes[data.role];
-    if (!destination) {
+    const raw = await response.text();
+    let data = null;
+    try {
+      data = raw ? JSON.parse(raw) : null;
+    } catch {
       showError('Невірний логін або пароль');
       return;
     }
 
-    window.location.href = destination;
+    if (!response.ok) {
+      showError(formatLoginDetail(data && data.detail) || 'Невірний логін або пароль');
+      return;
+    }
+
+    const token = data && data.access_token;
+    if (!token) {
+      showError('Невірний логін або пароль');
+      return;
+    }
+
+    const payload = parseJwtPayload(token);
+    let role = typeof data.role === 'string' ? data.role.trim() : '';
+    if (!role && payload && typeof payload.role === 'string') {
+      role = payload.role.trim();
+    }
+    role = role.toLowerCase();
+
+    if (role !== 'hospital' && role !== 'headquarters') {
+      showError('Невірний логін або пароль');
+      return;
+    }
+
+    localStorage.setItem('access_token', token);
+    localStorage.setItem('role', role);
+
+    const routes = {
+      hospital: '../hospital/index.html',
+      headquarters: '../headquarters/index.html',
+    };
+
+    window.location.href = routes[role];
   } catch {
     showError('Не вдалося з\'єднатися з сервером. Перевірте інтернет-з\'єднання.');
   } finally {

@@ -237,10 +237,6 @@ function closeDischargeModal() {
 
 dischargeCancelBtn.addEventListener('click', closeDischargeModal);
 
-dischargeModal.addEventListener('click', e => {
-  if (e.target === dischargeModal) closeDischargeModal();
-});
-
 dischargeConfirmBtn.addEventListener('click', async () => {
   if (!pendingDischargeId) return;
 

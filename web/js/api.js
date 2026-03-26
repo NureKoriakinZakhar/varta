@@ -8,10 +8,14 @@ function getRole() {
   return localStorage.getItem('role');
 }
 
+function loginPageHref() {
+  return new URL('../login/index.html', window.location.href).href;
+}
+
 function logout() {
   localStorage.removeItem('access_token');
   localStorage.removeItem('role');
-  window.location.href = '/pages/login/index.html';
+  window.location.href = loginPageHref();
 }
 
 async function apiFetch(path, options = {}) {

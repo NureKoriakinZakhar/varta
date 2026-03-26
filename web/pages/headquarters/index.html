@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VARTA — Генеральний штаб</title>
+  <link rel="stylesheet" href="../../css/tokens.css?v=2" />
+  <link rel="stylesheet" href="headquarters.css?v=3" />
+</head>
+<body>
+
+  <header class="topbar">
+    <div class="topbar__left">
+      <img class="topbar__logo" src="../../assets/logo.webp" alt="VARTA" />
+    </div>
+    <div class="topbar__center">
+      <h1 class="topbar__title">Генеральний штаб</h1>
+    </div>
+    <div class="topbar__right">
+      <button class="btn-logout" id="logoutBtn" title="Вийти">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/>
+          <polyline points="16 17 21 12 16 7"/>
+          <line x1="21" y1="12" x2="9" y2="12"/>
+        </svg>
+        Вийти
+      </button>
+    </div>
+  </header>
+
+  <main class="main">
+    <div class="toolbar">
+      <div class="segmented" role="tablist" aria-label="Тип списку">
+        <button type="button" class="segmented__btn active" id="tabUnits" role="tab" aria-selected="true">Підрозділи</button>
+        <button type="button" class="segmented__btn" id="tabHospitals" role="tab" aria-selected="false">Госпіталі</button>
+      </div>
+      <button type="button" class="btn-primary" id="addBtn">Додати підрозділ</button>
+    </div>
+
+    <div class="list-wrap" id="panelUnits">
+      <div class="entity-list" id="unitsList">
+        <div class="skeleton-list" id="unitsSkeleton">
+          <div class="skeleton-card"></div>
+          <div class="skeleton-card"></div>
+          <div class="skeleton-card"></div>
+        </div>
+      </div>
+      <p class="empty-msg" id="unitsEmpty" hidden>Немає підрозділів</p>
+    </div>
+
+    <div class="list-wrap" id="panelHospitals" hidden>
+      <div class="entity-list" id="hospitalsList">
+        <div class="skeleton-list" id="hospitalsSkeleton">
+          <div class="skeleton-card"></div>
+          <div class="skeleton-card"></div>
+          <div class="skeleton-card"></div>
+        </div>
+      </div>
+      <p class="empty-msg" id="hospitalsEmpty" hidden>Немає госпіталів</p>
+    </div>
+
+    <p class="error-msg" id="listError" hidden></p>
+  </main>
+
+  <div class="modal-overlay" id="formModal" hidden>
+    <div class="modal modal--wide">
+      <h3 class="modal__title" id="formModalTitle"></h3>
+      <form class="entity-form" id="entityForm" novalidate>
+        <div class="entity-form__field">
+          <label class="entity-form__label" for="fieldName">Назва (мін. 6 символів)</label>
+          <input class="entity-form__input" type="text" id="fieldName" name="name" autocomplete="organization" />
+        </div>
+        <div class="entity-form__field">
+          <label class="entity-form__label" for="fieldEmail">Email</label>
+          <input class="entity-form__input" type="email" id="fieldEmail" name="email" autocomplete="email" />
+        </div>
+        <div class="entity-form__field">
+          <label class="entity-form__label" for="fieldPassword" id="fieldPasswordLabel">Пароль</label>
+          <div class="entity-form__password-wrap">
+            <input class="entity-form__input entity-form__input--password" type="password" id="fieldPassword" name="password" autocomplete="new-password" />
+            <button type="button" class="entity-form__password-toggle" id="toggleFieldPassword" aria-label="Показати пароль">
+              <svg id="fieldPasswordIconEyeOff" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94"/>
+                <path d="M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19"/>
+                <line x1="1" y1="1" x2="23" y2="23"/>
+              </svg>
+              <svg id="fieldPasswordIconEye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="display:none" aria-hidden="true">
+                <path d="M1 12S5 4 12 4s11 8 11 8-4 8-11 8S1 12 1 12z"/>
+                <circle cx="12" cy="12" r="3"/>
+              </svg>
+            </button>
+          </div>
+          <p class="entity-form__hint" id="passwordHint" hidden>Залиште порожнім, якщо не змінюєте пароль</p>
+        </div>
+        <div class="entity-form__field">
+          <label class="entity-form__label" for="fieldCoordinates">Координати (широта, довгота)</label>
+          <input class="entity-form__input" type="text" id="fieldCoordinates" name="coordinates" placeholder="49.9935, 36.2304" />
+        </div>
+        <div class="entity-form__field" id="fieldAddressWrap" hidden>
+          <label class="entity-form__label" for="fieldAddress">Адреса (мін. 6 символів)</label>
+          <input class="entity-form__input" type="text" id="fieldAddress" name="address" autocomplete="street-address" />
+        </div>
+        <div class="entity-form__field" id="fieldCapacityWrap" hidden>
+          <label class="entity-form__label" for="fieldCapacity">Місць (мін. 10)</label>
+          <input class="entity-form__input entity-form__input--number" type="number" id="fieldCapacity" name="capacity_total" min="10" step="1" inputmode="numeric" />
+        </div>
+        <p class="entity-form__error" id="formError" hidden></p>
+        <div class="modal__actions modal__actions--start">
+          <button type="button" class="modal__btn modal__btn--cancel" id="formCancelBtn">Скасувати</button>
+          <button type="submit" class="modal__btn modal__btn--submit" id="formSubmitBtn">Зберегти</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="deleteModal" hidden>
+    <div class="modal">
+      <h3 class="modal__title">Видалити</h3>
+      <p class="modal__text" id="deleteModalText"></p>
+      <div class="modal__actions">
+        <button type="button" class="modal__btn modal__btn--cancel" id="deleteCancelBtn">Скасувати</button>
+        <button type="button" class="modal__btn modal__btn--danger" id="deleteConfirmBtn">Видалити</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../../js/api.js?v=2"></script>
+  <script src="headquarters.js?v=7"></script>
+</body>
+</html>
