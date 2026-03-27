@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>VARTA — Генеральний штаб</title>
   <link rel="stylesheet" href="../../css/tokens.css?v=2" />
-  <link rel="stylesheet" href="headquarters.css?v=3" />
+  <link rel="stylesheet" href="headquarters.css?v=5" />
 </head>
 <body>
 
@@ -30,9 +30,12 @@
 
   <main class="main">
     <div class="toolbar">
-      <div class="segmented" role="tablist" aria-label="Тип списку">
-        <button type="button" class="segmented__btn active" id="tabUnits" role="tab" aria-selected="true">Підрозділи</button>
-        <button type="button" class="segmented__btn" id="tabHospitals" role="tab" aria-selected="false">Госпіталі</button>
+      <div class="segmented">
+        <div class="segmented__tablist" role="tablist" aria-label="Тип списку">
+          <button type="button" class="segmented__btn active" id="tabUnits" role="tab" aria-selected="true">Підрозділи</button>
+          <button type="button" class="segmented__btn" id="tabHospitals" role="tab" aria-selected="false">Госпіталі</button>
+        </div>
+        <a class="segmented__btn segmented__link" href="infrastructure/index.html">Мапа</a>
       </div>
       <button type="button" class="btn-primary" id="addBtn">Додати підрозділ</button>
     </div>

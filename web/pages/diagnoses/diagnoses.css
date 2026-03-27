@@ -68,7 +68,7 @@ a.btn-logout {
 }
 
 .btn-logout {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 8px;
   background: none;
