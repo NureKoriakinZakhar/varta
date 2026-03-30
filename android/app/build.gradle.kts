@@ -14,11 +14,6 @@ android {
         version = release(36)
     }
 
-    @Suppress("UnstableApiUsage")
-    androidResources {
-        localeFilters += listOf("en")
-    }
-
     buildFeatures {
         viewBinding = true
     }
