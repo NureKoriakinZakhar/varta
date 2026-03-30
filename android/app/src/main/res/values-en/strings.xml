@@ -1,0 +1,63 @@
+<resources>
+    <string name="app_name">Varta</string>
+    <string name="text_exit">Press again to exit</string>
+
+    <string name="dialog_error_title">Error</string>
+    <string name="dialog_error_message">Something went wrong. Check your network connection and try again</string>
+    <string name="dialog_error_ok">OK</string>
+
+    <string name="dialog_delete_point_title">Delete point?</string>
+    <string name="dialog_delete_point_message">Are you sure you want to delete this point? This action cannot be undone</string>
+    <string name="dialog_delete_soldier_title">Delete soldier?</string>
+    <string name="dialog_delete_soldier_message">Are you sure you want to delete this soldier? All data will be lost</string>
+    <string name="dialog_delete_yes">Yes</string>
+    <string name="dialog_delete_no">No</string>
+
+    <string name="login_email">Email</string>
+    <string name="login_password">Password</string>
+    <string name="login_button">Log in</string>
+    <string name="login_support">Support and feedback</string>
+
+    <string name="nav_bar_map">Map</string>
+    <string name="nav_bar_soldiers">Soldiers</string>
+    <string name="nav_bar_points">Evacuation</string>
+
+    <string name="soldier_list_tittle">Soldiers</string>
+    <string name="soldier_list_search">Search soldiers…</string>
+
+    <string name="soldiers_about_tittle">Soldier details</string>
+    <string name="soldiers_about_name">Full name</string>
+    <string name="soldiers_about_rank">Rank</string>
+    <string name="soldiers_about_birth">Date of birth</string>
+    <string name="soldiers_about_status">Status</string>
+    <string name="soldiers_about_iot">Sensor serial number</string>
+    <string name="soldiers_about_hospital">Hospital ID</string>
+    <string name="soldiers_about_metrics">Metrics</string>
+    <string name="soldiers_about_delete">Delete soldier</string>
+
+    <string name="point_list_tittle">Evacuation points</string>
+    <string name="point_list_search">Search evacuation points…</string>
+
+    <string name="point_about_tittle">About point</string>
+    <string name="point_about_id">Point ID</string>
+    <string name="point_about_name">Name</string>
+    <string name="point_about_map">Point location on map</string>
+    <string name="point_about_description">Description</string>
+    <string name="point_about_delete">Delete point</string>
+
+    <string name="soldier_add_tittle">Add soldier</string>
+    <string name="soldier_add_button">Add soldier</string>
+    <string name="soldier_add_first_name">First name</string>
+    <string name="soldier_add_last_name">Last name</string>
+    <string name="soldier_add_middle_name">Middle name</string>
+    <string name="soldier_add_birth_day">Date of birth</string>
+    <string name="soldier_add_birth_day_hint">DD</string>
+    <string name="soldier_add_birth_month_hint">MM</string>
+    <string name="soldier_add_birth_year_hint">YYYY</string>
+    <string name="soldier_add_rank">Rank</string>
+    <string name="soldier_add_iot_serial">IoT serial number</string>
+
+    <string name="point_add_tittle">Add point</string>
+    <string name="point_add_button">Add evacuation point</string>
+    <string name="point_add_coordinates">Select point location</string>
+</resources>
