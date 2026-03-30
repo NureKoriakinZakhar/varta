@@ -1,10 +1,57 @@
+const TRANSLATIONS = {
+  uk: {
+    pageTitle: 'VARTA — Генеральний штаб',
+    topbarTitle: 'Генеральний штаб',
+    back: 'Назад',
+    mapAriaLabel: 'Інфраструктура на мапі',
+    errLoad: 'Не вдалося завантажити точки інфраструктури',
+    errParse: 'Не вдалося обробити відповідь сервера',
+    errInvalid: 'Некоректні дані інфраструктури',
+    labelType: 'Тип',
+    labelEmail: 'Email',
+    labelCoords: 'Координати',
+    labelCreated: 'Створено',
+    labelAddress: 'Адреса',
+    labelCapacity: 'Місць',
+    unitBeds: 'місць',
+    typeUnit: 'Підрозділ',
+    typeHospital: 'Госпіталь',
+    typeHQ: 'Штаб',
+    typeEvac: 'Точка евакуації',
+  },
+  en: {
+    pageTitle: 'VARTA — General Staff',
+    topbarTitle: 'General Staff',
+    back: 'Back',
+    mapAriaLabel: 'Infrastructure on map',
+    errLoad: 'Failed to load infrastructure points',
+    errParse: 'Failed to process server response',
+    errInvalid: 'Invalid infrastructure data',
+    labelType: 'Type',
+    labelEmail: 'Email',
+    labelCoords: 'Coordinates',
+    labelCreated: 'Created',
+    labelAddress: 'Address',
+    labelCapacity: 'Capacity',
+    unitBeds: 'beds',
+    typeUnit: 'Unit',
+    typeHospital: 'Hospital',
+    typeHQ: 'Headquarters',
+    typeEvac: 'Evacuation point',
+  },
+};
+
 if (!getToken() || getRole() !== 'headquarters') {
   window.location.href = '../../login/index.html';
 }
 
+let lang = vartaLang.get();
+
+function t(key) { return TRANSLATIONS[lang][key]; }
+
 const MAP_ASSETS = '../../../assets/map/';
-const ZOOM_MIN = 5;
-const ZOOM_MAX = 19;
+const ZOOM_MIN   = 5;
+const ZOOM_MAX   = 19;
 const ICON_PX_MIN = 16;
 const ICON_PX_MAX = 52;
 
@@ -17,25 +64,28 @@ const map = L.map('map', {
 
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   maxZoom: 19,
-  attribution:
-    '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
 }).addTo(map);
 
 const IMAGE_TYPE_URL = {
-  Штаб: `${MAP_ASSETS}headquarters.webp`,
-  Підрозділ: `${MAP_ASSETS}unit.webp`,
-  'Точка евакуації': `${MAP_ASSETS}evacuation.webp`,
-  Госпіталь: `${MAP_ASSETS}hospital.webp`,
+  'Штаб':             `${MAP_ASSETS}headquarters.webp`,
+  'Підрозділ':        `${MAP_ASSETS}unit.webp`,
+  'Точка евакуації':  `${MAP_ASSETS}evacuation.webp`,
+  'Госпіталь':        `${MAP_ASSETS}hospital.webp`,
 };
 
 const POPUP_OPTS = { maxWidth: 320, className: 'map-popup-theme', autoPanPadding: [16, 16] };
 
 const markerRegistry = [];
 
+let cachedData        = null;
+let cachedUnitsById   = null;
+let cachedHospitalsById = null;
+
 function iconSizeForZoom(zoom) {
   const z = Math.max(ZOOM_MIN, Math.min(ZOOM_MAX, zoom));
-  const t = (z - ZOOM_MIN) / (ZOOM_MAX - ZOOM_MIN);
-  return Math.round(ICON_PX_MIN + t * (ICON_PX_MAX - ICON_PX_MIN));
+  const ratio = (z - ZOOM_MIN) / (ZOOM_MAX - ZOOM_MIN);
+  return Math.round(ICON_PX_MIN + ratio * (ICON_PX_MAX - ICON_PX_MIN));
 }
 
 function createImageIcon(type, size) {
@@ -94,6 +144,14 @@ function formatDateTime(iso) {
   return d.toLocaleString('uk-UA', { dateStyle: 'medium', timeStyle: 'short' });
 }
 
+function typeLabel(apiType) {
+  if (apiType === 'Підрозділ')       return t('typeUnit');
+  if (apiType === 'Госпіталь')       return t('typeHospital');
+  if (apiType === 'Штаб')            return t('typeHQ');
+  if (apiType === 'Точка евакуації') return t('typeEvac');
+  return apiType || '';
+}
+
 function appendRow(root, label, value) {
   if (value === undefined || value === null) return;
   const s = typeof value === 'string' ? value.trim() : String(value);
@@ -122,40 +180,85 @@ function buildPopupEl(item, unitsById, hospitalsById) {
 
   if (item.type === 'Підрозділ') {
     const full = unitsById.get(item.id);
-    appendRow(root, 'Тип', 'Підрозділ');
+    appendRow(root, t('labelType'), t('typeUnit'));
     if (full) {
-      appendRow(root, 'Email', full.email);
-      appendRow(root, 'Координати', full.coordinates);
-      appendRow(root, 'Створено', formatDateTime(full.created_at));
+      appendRow(root, t('labelEmail'), full.email);
+      appendRow(root, t('labelCoords'), full.coordinates);
+      appendRow(root, t('labelCreated'), formatDateTime(full.created_at));
     } else {
-      appendRow(root, 'Координати', item.coordinates);
+      appendRow(root, t('labelCoords'), item.coordinates);
     }
     return root;
   }
 
   if (item.type === 'Госпіталь') {
     const full = hospitalsById.get(item.id);
-    appendRow(root, 'Тип', 'Госпіталь');
+    appendRow(root, t('labelType'), t('typeHospital'));
     if (full) {
-      appendRow(root, 'Email', full.email);
-      appendRow(root, 'Адреса', full.address);
+      appendRow(root, t('labelEmail'), full.email);
+      appendRow(root, t('labelAddress'), full.address);
       appendRow(
         root,
-        'Місць',
-        full.capacity_total != null ? `${full.capacity_total} місць` : '',
+        t('labelCapacity'),
+        full.capacity_total != null ? `${full.capacity_total} ${t('unitBeds')}` : '',
       );
-      appendRow(root, 'Координати', full.coordinates);
-      appendRow(root, 'Створено', formatDateTime(full.created_at));
+      appendRow(root, t('labelCoords'), full.coordinates);
+      appendRow(root, t('labelCreated'), formatDateTime(full.created_at));
     } else {
-      appendRow(root, 'Координати', item.coordinates);
+      appendRow(root, t('labelCoords'), item.coordinates);
     }
     return root;
   }
 
-  appendRow(root, 'Тип', item.type || '');
-  appendRow(root, 'Координати', item.coordinates);
+  appendRow(root, t('labelType'), typeLabel(item.type));
+  appendRow(root, t('labelCoords'), item.coordinates);
   return root;
 }
+
+function renderMarkers() {
+  for (const { marker } of markerRegistry) {
+    marker.remove();
+  }
+  markerRegistry.length = 0;
+
+  for (const item of cachedData) {
+    const ll = parseCoordinates(item.coordinates);
+    if (!ll) continue;
+    const icon = iconForItemAtZoom(item, map.getZoom());
+    if (!icon) continue;
+    const popupEl = buildPopupEl(item, cachedUnitsById, cachedHospitalsById);
+    const marker = L.marker(ll, { icon }).bindPopup(popupEl, POPUP_OPTS);
+    marker.addTo(map);
+    markerRegistry.push({ marker, item });
+  }
+
+  syncMarkerSizes();
+}
+
+function applyLang() {
+  document.documentElement.lang = lang;
+  document.title = t('pageTitle');
+  document.getElementById('topbarTitle').textContent = t('topbarTitle');
+  document.getElementById('backText').textContent = t('back');
+  document.getElementById('map').setAttribute('aria-label', t('mapAriaLabel'));
+
+  document.querySelectorAll('.lang-switcher__btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.lang === lang);
+  });
+
+  if (cachedData) renderMarkers();
+}
+
+window.addEventListener('varta:langchange', (e) => {
+  lang = e.detail.lang;
+  applyLang();
+});
+
+document.querySelectorAll('.lang-switcher__btn').forEach((btn) => {
+  btn.addEventListener('click', () => {
+    vartaLang.set(btn.dataset.lang);
+  });
+});
 
 async function loadInfrastructure() {
   const errEl = document.getElementById('mapError');
@@ -168,7 +271,7 @@ async function loadInfrastructure() {
   ]);
 
   if (!infRes || !infRes.ok) {
-    errEl.textContent = 'Не вдалося завантажити точки інфраструктури';
+    errEl.textContent = t('errLoad');
     errEl.hidden = false;
     return;
   }
@@ -177,54 +280,44 @@ async function loadInfrastructure() {
   try {
     data = await infRes.json();
   } catch {
-    errEl.textContent = 'Не вдалося обробити відповідь сервера';
+    errEl.textContent = t('errParse');
     errEl.hidden = false;
     return;
   }
 
   if (!Array.isArray(data)) {
-    errEl.textContent = 'Некоректні дані інфраструктури';
+    errEl.textContent = t('errInvalid');
     errEl.hidden = false;
     return;
   }
 
-  const unitsById = new Map();
+  cachedUnitsById = new Map();
   if (unitsRes && unitsRes.ok) {
     try {
       const units = await unitsRes.json();
       if (Array.isArray(units)) {
         for (const u of units) {
-          if (u && typeof u.id === 'number') unitsById.set(u.id, u);
+          if (u && typeof u.id === 'number') cachedUnitsById.set(u.id, u);
         }
       }
     } catch {}
   }
 
-  const hospitalsById = new Map();
+  cachedHospitalsById = new Map();
   if (hospRes && hospRes.ok) {
     try {
       const list = await hospRes.json();
       if (Array.isArray(list)) {
         for (const h of list) {
-          if (h && typeof h.id === 'number') hospitalsById.set(h.id, h);
+          if (h && typeof h.id === 'number') cachedHospitalsById.set(h.id, h);
         }
       }
     } catch {}
   }
 
-  markerRegistry.length = 0;
-  for (const item of data) {
-    const ll = parseCoordinates(item.coordinates);
-    if (!ll) continue;
-    const icon = iconForItemAtZoom(item, map.getZoom());
-    if (!icon) continue;
-    const popupEl = buildPopupEl(item, unitsById, hospitalsById);
-    const marker = L.marker(ll, { icon }).bindPopup(popupEl, POPUP_OPTS);
-    marker.addTo(map);
-    markerRegistry.push({ marker, item });
-  }
-
-  syncMarkerSizes();
+  cachedData = data;
+  renderMarkers();
 }
 
+applyLang();
 loadInfrastructure();

@@ -1,20 +1,78 @@
+const TRANSLATIONS = {
+  uk: {
+    pageTitle: 'VARTA — Вхід',
+    emailPlaceholder: 'Електронна пошта',
+    passwordPlaceholder: 'Пароль',
+    showPassword: 'Показати пароль',
+    hidePassword: 'Приховати пароль',
+    submitBtn: 'Вхід',
+    loading: 'Завантаження...',
+    emptyFields: 'Будь ласка, заповніть всі поля',
+    wrongCredentials: 'Невірний логін або пароль',
+    networkError: "Не вдалося з'єднатися з сервером. Перевірте інтернет-з'єднання.",
+    supportTitle: 'Підтримка та відгуки',
+  },
+  en: {
+    pageTitle: 'VARTA — Login',
+    emailPlaceholder: 'Email',
+    passwordPlaceholder: 'Password',
+    showPassword: 'Show password',
+    hidePassword: 'Hide password',
+    submitBtn: 'Sign In',
+    loading: 'Loading...',
+    emptyFields: 'Please fill in all fields',
+    wrongCredentials: 'Invalid email or password',
+    networkError: 'Could not connect to the server. Check your internet connection.',
+    supportTitle: 'Support & Feedback',
+  },
+};
+
 const API_BASE = 'https://varta-1-wgnl.onrender.com';
 
-const form = document.getElementById('loginForm');
-const emailInput = document.getElementById('email');
+let lang = vartaLang.get();
+
+function t(key) { return TRANSLATIONS[lang][key]; }
+
+const form          = document.getElementById('loginForm');
+const emailInput    = document.getElementById('email');
 const passwordInput = document.getElementById('password');
-const toggleBtn = document.getElementById('togglePassword');
-const iconEye = document.getElementById('iconEye');
-const iconEyeOff = document.getElementById('iconEyeOff');
-const errorMsg = document.getElementById('errorMsg');
-const submitBtn = document.getElementById('submitBtn');
+const toggleBtn     = document.getElementById('togglePassword');
+const iconEye       = document.getElementById('iconEye');
+const iconEyeOff    = document.getElementById('iconEyeOff');
+const errorMsg      = document.getElementById('errorMsg');
+const submitBtn     = document.getElementById('submitBtn');
+
+function applyLang() {
+  document.documentElement.lang = lang;
+  document.title = t('pageTitle');
+  emailInput.placeholder = t('emailPlaceholder');
+  passwordInput.placeholder = t('passwordPlaceholder');
+  toggleBtn.setAttribute('aria-label', t('showPassword'));
+  submitBtn.textContent = t('submitBtn');
+  document.getElementById('supportTitle').textContent = t('supportTitle');
+
+  document.querySelectorAll('.lang-switcher__btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.lang === lang);
+  });
+}
+
+window.addEventListener('varta:langchange', (e) => {
+  lang = e.detail.lang;
+  applyLang();
+});
+
+document.querySelectorAll('.lang-switcher__btn').forEach((btn) => {
+  btn.addEventListener('click', () => {
+    vartaLang.set(btn.dataset.lang);
+  });
+});
 
 toggleBtn.addEventListener('click', () => {
   const isPassword = passwordInput.type === 'password';
   passwordInput.type = isPassword ? 'text' : 'password';
   iconEye.style.display = isPassword ? 'block' : 'none';
   iconEyeOff.style.display = isPassword ? 'none' : 'block';
-  toggleBtn.setAttribute('aria-label', isPassword ? 'Приховати пароль' : 'Показати пароль');
+  toggleBtn.setAttribute('aria-label', t(isPassword ? 'hidePassword' : 'showPassword'));
 });
 
 function showError(message) {
@@ -30,7 +88,7 @@ function hideError() {
 function setLoading(loading) {
   submitBtn.disabled = loading;
   submitBtn.classList.toggle('loading', loading);
-  submitBtn.textContent = loading ? 'Завантаження...' : 'Вхід';
+  submitBtn.textContent = loading ? t('loading') : t('submitBtn');
 }
 
 function parseJwtPayload(token) {
@@ -67,11 +125,11 @@ form.addEventListener('submit', async (e) => {
   e.preventDefault();
   hideError();
 
-  const email = cleanEmail(emailInput.value);
+  const email    = cleanEmail(emailInput.value);
   const password = stripInvisible(passwordInput.value);
 
   if (!email || !password) {
-    showError('Будь ласка, заповніть всі поля');
+    showError(t('emptyFields'));
     return;
   }
 
@@ -94,18 +152,18 @@ form.addEventListener('submit', async (e) => {
     try {
       data = raw ? JSON.parse(raw) : null;
     } catch {
-      showError('Невірний логін або пароль');
+      showError(t('wrongCredentials'));
       return;
     }
 
     if (!response.ok) {
-      showError(formatLoginDetail(data && data.detail) || 'Невірний логін або пароль');
+      showError(formatLoginDetail(data && data.detail) || t('wrongCredentials'));
       return;
     }
 
     const token = data && data.access_token;
     if (!token) {
-      showError('Невірний логін або пароль');
+      showError(t('wrongCredentials'));
       return;
     }
 
@@ -117,7 +175,7 @@ form.addEventListener('submit', async (e) => {
     role = role.toLowerCase();
 
     if (role !== 'hospital' && role !== 'headquarters') {
-      showError('Невірний логін або пароль');
+      showError(t('wrongCredentials'));
       return;
     }
 
@@ -131,8 +189,10 @@ form.addEventListener('submit', async (e) => {
 
     window.location.href = routes[role];
   } catch {
-    showError('Не вдалося з\'єднатися з сервером. Перевірте інтернет-з\'єднання.');
+    showError(t('networkError'));
   } finally {
     setLoading(false);
   }
 });
+
+applyLang();

@@ -1,23 +1,113 @@
+const TRANSLATIONS = {
+  uk: {
+    pageTitle: 'VARTA — Пацієнти',
+    topbarTitle: 'Пацієнти госпіталю',
+    logout: 'Вийти',
+    searchPlaceholder: 'Пошук за ПІБ...',
+    filterAll: 'Всі',
+    filterGood: 'Норма',
+    filterWarning: 'Увага',
+    filterCritical: 'Критично',
+    statTotal: 'Всього',
+    statGood: 'Норма',
+    statWarning: 'Увага',
+    statCritical: 'Критично',
+    emptyMsg: 'Пацієнтів не знайдено',
+    admitPanelTitle: 'Прийом на лікування',
+    admitLabel: 'ID військовослужбовця',
+    admitPlaceholder: 'Введіть ID...',
+    admitBtn: 'Прийняти',
+    admitBtnWait: 'Зачекайте...',
+    admitIdError: 'Введіть коректний ID військовослужбовця',
+    dischargeModalTitle: 'Виписати пацієнта',
+    dischargeTextPrefix: 'Ви впевнені, що хочете виписати',
+    dischargeCancel: 'Скасувати',
+    dischargeConfirm: 'Виписати',
+    dischargeConfirmWait: 'Зачекайте...',
+    loadError: 'Помилка завантаження:',
+    statusGood: 'Норма',
+    statusWarning: 'Увага',
+    statusCritical: 'Критично',
+    statusNodata: 'Немає даних',
+    metricTemp: 'Темп.',
+    metricHr: 'ЧСС',
+    metricBat: 'Акум.',
+    metricUpdated: 'Оновлено',
+    btnDiagnoses: 'Діагнози',
+    btnDischarge: 'Виписати',
+    badgeNodata: 'Немає даних',
+  },
+  en: {
+    pageTitle: 'VARTA — Patients',
+    topbarTitle: 'Hospital Patients',
+    logout: 'Logout',
+    searchPlaceholder: 'Search by name...',
+    filterAll: 'All',
+    filterGood: 'Normal',
+    filterWarning: 'Warning',
+    filterCritical: 'Critical',
+    statTotal: 'Total',
+    statGood: 'Normal',
+    statWarning: 'Warning',
+    statCritical: 'Critical',
+    emptyMsg: 'No patients found',
+    admitPanelTitle: 'Admission',
+    admitLabel: 'Soldier ID',
+    admitPlaceholder: 'Enter ID...',
+    admitBtn: 'Admit',
+    admitBtnWait: 'Please wait...',
+    admitIdError: 'Enter a valid soldier ID',
+    dischargeModalTitle: 'Discharge Patient',
+    dischargeTextPrefix: 'Are you sure you want to discharge',
+    dischargeCancel: 'Cancel',
+    dischargeConfirm: 'Discharge',
+    dischargeConfirmWait: 'Please wait...',
+    loadError: 'Load error:',
+    statusGood: 'Normal',
+    statusWarning: 'Warning',
+    statusCritical: 'Critical',
+    statusNodata: 'No data',
+    metricTemp: 'Temp.',
+    metricHr: 'HR',
+    metricBat: 'Bat.',
+    metricUpdated: 'Updated',
+    btnDiagnoses: 'Diagnoses',
+    btnDischarge: 'Discharge',
+    badgeNodata: 'No data',
+  },
+};
+
 if (!getToken() || getRole() !== 'hospital') {
   window.location.href = '../login/index.html';
 }
 
-const patientsList = document.getElementById('patientsList');
-const skeletonList = document.getElementById('skeletonList');
-const emptyMsg     = document.getElementById('emptyMsg');
-const errorMsg     = document.getElementById('errorMsg');
-const searchInput  = document.getElementById('searchInput');
-const filterBtns   = document.querySelectorAll('.filter-btn');
+let lang = vartaLang.get();
 
-const statTotal    = document.getElementById('statTotal');
-const statGood     = document.getElementById('statGood');
-const statWarning  = document.getElementById('statWarning');
-const statCritical = document.getElementById('statCritical');
+function t(key) { return TRANSLATIONS[lang][key]; }
+
+const patientsList       = document.getElementById('patientsList');
+const skeletonList       = document.getElementById('skeletonList');
+const emptyMsg           = document.getElementById('emptyMsg');
+const errorMsg           = document.getElementById('errorMsg');
+const searchInput        = document.getElementById('searchInput');
+const filterBtns         = document.querySelectorAll('.filter-btn');
+const statTotal          = document.getElementById('statTotal');
+const statGood           = document.getElementById('statGood');
+const statWarning        = document.getElementById('statWarning');
+const statCritical       = document.getElementById('statCritical');
+const admitSoldierId     = document.getElementById('admitSoldierId');
+const admitBtn           = document.getElementById('admitBtn');
+const admitMsg           = document.getElementById('admitMsg');
+const dischargeModal     = document.getElementById('dischargeModal');
+const dischargeModalName = document.getElementById('dischargeModalName');
+const dischargeCancelBtn = document.getElementById('dischargeCancelBtn');
+const dischargeConfirmBtn = document.getElementById('dischargeConfirmBtn');
 
 document.getElementById('logoutBtn').addEventListener('click', logout);
 
-let allPatients = [];
+let allPatients  = [];
 let activeFilter = 'all';
+let dataLoaded   = false;
 
 function statusClass(status) {
   if (status === 'Good')     return 'good';
@@ -27,15 +117,15 @@ function statusClass(status) {
 }
 
 function statusLabel(status) {
-  if (status === 'Good')     return 'Норма';
-  if (status === 'Warning')  return 'Увага';
-  if (status === 'Critical') return 'Критично';
-  return 'Немає даних';
+  if (status === 'Good')     return t('statusGood');
+  if (status === 'Warning')  return t('statusWarning');
+  if (status === 'Critical') return t('statusCritical');
+  return t('statusNodata');
 }
 
-function tempClass(t) {
-  if (t < 34.0 || t >= 39.5) return 'metric__value--crit';
-  if (t < 35.0 || t >= 38.5) return 'metric__value--warn';
+function tempClass(temp) {
+  if (temp < 34.0 || temp >= 39.5) return 'metric__value--crit';
+  if (temp < 35.0 || temp >= 38.5) return 'metric__value--warn';
   return '';
 }
 
@@ -65,22 +155,22 @@ function renderPatient(p) {
     <div class="patient-metrics">
       <div class="metric">
         <span class="metric__value ${tempClass(m.temperature)}">${m.temperature.toFixed(1)}°C</span>
-        <span class="metric__label">Темп.</span>
+        <span class="metric__label">${t('metricTemp')}</span>
       </div>
       <div class="metric">
         <span class="metric__value ${hrClass(m.heart_rate)}">${m.heart_rate}</span>
-        <span class="metric__label">ЧСС</span>
+        <span class="metric__label">${t('metricHr')}</span>
       </div>
       <div class="metric">
         <span class="metric__value ${batteryClass(m.battery_percent)}">${m.battery_percent}%</span>
-        <span class="metric__label">Акум.</span>
+        <span class="metric__label">${t('metricBat')}</span>
       </div>
       <div class="metric">
         <span class="metric__value" style="font-size:13px;font-weight:400;color:var(--color-text-secondary)">${formatTime(m.last_update)}</span>
-        <span class="metric__label">Оновлено</span>
+        <span class="metric__label">${t('metricUpdated')}</span>
       </div>
     </div>
-  ` : `<span class="badge-nodata">Немає даних</span>`;
+  ` : `<span class="badge-nodata">${t('badgeNodata')}</span>`;
 
   const card = document.createElement('div');
   card.className = `patient-card patient-card--${cls}`;
@@ -95,8 +185,8 @@ function renderPatient(p) {
     <div class="patient-card-right">
       ${metricsHtml}
       <div class="patient-actions">
-        <button type="button" class="patient-actions__btn patient-actions__btn--diagnoses" data-action="diagnoses">Діагнози</button>
-        <button type="button" class="patient-actions__btn patient-actions__btn--discharge" data-action="discharge">Виписати</button>
+        <button type="button" class="patient-actions__btn patient-actions__btn--diagnoses" data-action="diagnoses">${t('btnDiagnoses')}</button>
+        <button type="button" class="patient-actions__btn patient-actions__btn--discharge" data-action="discharge">${t('btnDischarge')}</button>
       </div>
     </div>
   `;
@@ -104,10 +194,10 @@ function renderPatient(p) {
 }
 
 function updateStats(patients) {
-  statTotal.textContent     = patients.length;
-  statGood.textContent      = patients.filter(p => p.status === 'Good').length;
-  statWarning.textContent   = patients.filter(p => p.status === 'Warning').length;
-  statCritical.textContent  = patients.filter(p => p.status === 'Critical').length;
+  statTotal.textContent    = patients.length;
+  statGood.textContent     = patients.filter(p => p.status === 'Good').length;
+  statWarning.textContent  = patients.filter(p => p.status === 'Warning').length;
+  statCritical.textContent = patients.filter(p => p.status === 'Critical').length;
 }
 
 function renderList() {
@@ -128,6 +218,53 @@ function renderList() {
     filtered.forEach(p => patientsList.appendChild(renderPatient(p)));
   }
 }
+
+function applyLang() {
+  document.documentElement.lang = lang;
+  document.title = t('pageTitle');
+  document.getElementById('topbarTitle').textContent = t('topbarTitle');
+  document.getElementById('logoutText').textContent = t('logout');
+  document.getElementById('logoutBtn').title = t('logout');
+
+  document.querySelector('[data-status="all"]').textContent = t('filterAll');
+  document.querySelector('[data-status="Good"]').innerHTML = `<span class="dot dot--good"></span>${t('filterGood')}`;
+  document.querySelector('[data-status="Warning"]').innerHTML = `<span class="dot dot--warning"></span>${t('filterWarning')}`;
+  document.querySelector('[data-status="Critical"]').innerHTML = `<span class="dot dot--critical"></span>${t('filterCritical')}`;
+
+  document.getElementById('labelTotal').textContent = t('statTotal');
+  document.getElementById('labelGood').textContent = t('statGood');
+  document.getElementById('labelWarning').textContent = t('statWarning');
+  document.getElementById('labelCritical').textContent = t('statCritical');
+
+  emptyMsg.textContent = t('emptyMsg');
+
+  document.getElementById('admitTitle').textContent = t('admitPanelTitle');
+  document.getElementById('admitLabel').textContent = t('admitLabel');
+  admitSoldierId.placeholder = t('admitPlaceholder');
+  admitBtn.textContent = t('admitBtn');
+
+  document.getElementById('dischargeModalTitle').textContent = t('dischargeModalTitle');
+  document.getElementById('dischargeModalTextPrefix').textContent = t('dischargeTextPrefix');
+  dischargeCancelBtn.textContent = t('dischargeCancel');
+  dischargeConfirmBtn.textContent = t('dischargeConfirm');
+
+  document.querySelectorAll('.lang-switcher__btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.lang === lang);
+  });
+
+  if (dataLoaded) renderList();
+}
+
+window.addEventListener('varta:langchange', (e) => {
+  lang = e.detail.lang;
+  applyLang();
+});
+
+document.querySelectorAll('.lang-switcher__btn').forEach((btn) => {
+  btn.addEventListener('click', () => {
+    vartaLang.set(btn.dataset.lang);
+  });
+});
 
 searchInput.addEventListener('input', renderList);
 
@@ -153,21 +290,16 @@ async function loadPatients() {
     }
 
     allPatients = await res.json();
+    dataLoaded = true;
     updateStats(allPatients);
     renderList();
 
   } catch (e) {
     skeletonList.remove();
-    errorMsg.textContent = `Помилка завантаження: ${e.message}`;
+    errorMsg.textContent = `${t('loadError')} ${e.message}`;
     errorMsg.hidden = false;
   }
 }
-
-loadPatients();
-
-const admitSoldierId = document.getElementById('admitSoldierId');
-const admitBtn       = document.getElementById('admitBtn');
-const admitMsg       = document.getElementById('admitMsg');
 
 function showAdmitMsg(text, type) {
   admitMsg.textContent = text;
@@ -178,12 +310,12 @@ function showAdmitMsg(text, type) {
 async function submitAdmit() {
   const id = parseInt(admitSoldierId.value, 10);
   if (!id || id < 1) {
-    showAdmitMsg('Введіть коректний ID військовослужбовця', 'error');
+    showAdmitMsg(t('admitIdError'), 'error');
     return;
   }
 
   admitBtn.disabled = true;
-  admitBtn.textContent = 'Зачекайте...';
+  admitBtn.textContent = t('admitBtnWait');
   admitMsg.hidden = true;
 
   try {
@@ -207,7 +339,7 @@ async function submitAdmit() {
     showAdmitMsg(`Помилка: ${e.message}`, 'error');
   } finally {
     admitBtn.disabled = false;
-    admitBtn.textContent = 'Прийняти';
+    admitBtn.textContent = t('admitBtn');
   }
 }
 
@@ -216,11 +348,6 @@ admitBtn.addEventListener('click', submitAdmit);
 admitSoldierId.addEventListener('keydown', e => {
   if (e.key === 'Enter') submitAdmit();
 });
-
-const dischargeModal      = document.getElementById('dischargeModal');
-const dischargeModalName  = document.getElementById('dischargeModalName');
-const dischargeCancelBtn  = document.getElementById('dischargeCancelBtn');
-const dischargeConfirmBtn = document.getElementById('dischargeConfirmBtn');
 
 let pendingDischargeId = null;
 
@@ -241,7 +368,7 @@ dischargeConfirmBtn.addEventListener('click', async () => {
   if (!pendingDischargeId) return;
 
   dischargeConfirmBtn.disabled = true;
-  dischargeConfirmBtn.textContent = 'Зачекайте...';
+  dischargeConfirmBtn.textContent = t('dischargeConfirmWait');
 
   try {
     const res = await apiFetch('/hospitals/discharge_patient', {
@@ -259,7 +386,7 @@ dischargeConfirmBtn.addEventListener('click', async () => {
   } catch (e) {
   } finally {
     dischargeConfirmBtn.disabled = false;
-    dischargeConfirmBtn.textContent = 'Виписати';
+    dischargeConfirmBtn.textContent = t('dischargeConfirm');
   }
 });
 
@@ -276,3 +403,6 @@ patientsList.addEventListener('click', e => {
   }
   if (btn.dataset.action === 'discharge') openDischargeModal(id, name);
 });
+
+applyLang();
+loadPatients();

@@ -4,8 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>VARTA — Пацієнти</title>
-  <link rel="stylesheet" href="../../css/tokens.css?v=2" />
-  <link rel="stylesheet" href="hospital.css?v=8" />
+  <link rel="stylesheet" href="../../css/tokens.css?v=3" />
+  <link rel="stylesheet" href="../../css/lang-switcher.css?v=2" />
+  <link rel="stylesheet" href="hospital.css?v=10" />
 </head>
 <body>
 
@@ -14,16 +15,20 @@
       <img class="topbar__logo" src="../../assets/logo.webp" alt="VARTA" />
     </div>
     <div class="topbar__center">
-      <h1 class="topbar__title">Пацієнти госпіталю</h1>
+      <h1 class="topbar__title" id="topbarTitle">Пацієнти госпіталю</h1>
     </div>
     <div class="topbar__right">
-      <button class="btn-logout" id="logoutBtn" title="Вийти">
+      <div class="lang-switcher">
+        <button type="button" class="lang-switcher__btn" data-lang="uk">UA</button>
+        <button type="button" class="lang-switcher__btn" data-lang="en">EN</button>
+      </div>
+      <button class="btn-logout" id="logoutBtn">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
           <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/>
           <polyline points="16 17 21 12 16 7"/>
           <line x1="21" y1="12" x2="9" y2="12"/>
         </svg>
-        Вийти
+        <span id="logoutText">Вийти</span>
       </button>
     </div>
   </header>
@@ -54,19 +59,19 @@
     <div class="stats-row" id="statsRow">
       <div class="stat-card">
         <span class="stat-card__value" id="statTotal">—</span>
-        <span class="stat-card__label">Всього</span>
+        <span class="stat-card__label" id="labelTotal">Всього</span>
       </div>
       <div class="stat-card stat-card--good">
         <span class="stat-card__value" id="statGood">—</span>
-        <span class="stat-card__label">Норма</span>
+        <span class="stat-card__label" id="labelGood">Норма</span>
       </div>
       <div class="stat-card stat-card--warning">
         <span class="stat-card__value" id="statWarning">—</span>
-        <span class="stat-card__label">Увага</span>
+        <span class="stat-card__label" id="labelWarning">Увага</span>
       </div>
       <div class="stat-card stat-card--critical">
         <span class="stat-card__value" id="statCritical">—</span>
-        <span class="stat-card__label">Критично</span>
+        <span class="stat-card__label" id="labelCritical">Критично</span>
       </div>
     </div>
 
@@ -86,10 +91,10 @@
       </div>
 
       <aside class="admit-panel">
-        <h2 class="admit-panel__title">Прийом на лікування</h2>
+        <h2 class="admit-panel__title" id="admitTitle">Прийом на лікування</h2>
         <div class="admit-panel__divider"></div>
         <div class="admit-panel__field">
-          <label class="admit-panel__label" for="admitSoldierId">ID військовослужбовця</label>
+          <label class="admit-panel__label" id="admitLabel" for="admitSoldierId">ID військовослужбовця</label>
           <input class="admit-panel__input" type="text" inputmode="numeric" pattern="[0-9]*" id="admitSoldierId" placeholder="Введіть ID..." />
         </div>
         <p class="admit-panel__msg" id="admitMsg" hidden></p>
@@ -102,8 +107,8 @@
 
   <div class="modal-overlay" id="dischargeModal" hidden>
     <div class="modal">
-      <h3 class="modal__title">Виписати пацієнта</h3>
-      <p class="modal__text">Ви впевнені, що хочете виписати <strong id="dischargeModalName"></strong>?</p>
+      <h3 class="modal__title" id="dischargeModalTitle">Виписати пацієнта</h3>
+      <p class="modal__text"><span id="dischargeModalTextPrefix">Ви впевнені, що хочете виписати</span> <strong id="dischargeModalName"></strong>?</p>
       <div class="modal__actions">
         <button class="modal__btn modal__btn--cancel" id="dischargeCancelBtn">Скасувати</button>
         <button class="modal__btn modal__btn--danger" id="dischargeConfirmBtn">Виписати</button>
@@ -111,7 +116,8 @@
     </div>
   </div>
 
+  <script src="../../js/lang.js?v=1"></script>
   <script src="../../js/api.js?v=2"></script>
-  <script src="hospital.js?v=11"></script>
+  <script src="hospital.js?v=13"></script>
 </body>
 </html>

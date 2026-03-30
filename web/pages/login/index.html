@@ -4,10 +4,16 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>VARTA — Вхід</title>
-  <link rel="stylesheet" href="../../css/tokens.css?v=2" />
-  <link rel="stylesheet" href="login.css" />
+  <link rel="stylesheet" href="../../css/tokens.css?v=3" />
+  <link rel="stylesheet" href="../../css/lang-switcher.css?v=2" />
+  <link rel="stylesheet" href="login.css?v=2" />
 </head>
 <body>
+
+  <div class="lang-switcher lang-switcher--page">
+    <button type="button" class="lang-switcher__btn" data-lang="uk">UA</button>
+    <button type="button" class="lang-switcher__btn" data-lang="en">EN</button>
+  </div>
 
   <div class="login-wrapper">
     <header class="logo" aria-label="VARTA">
@@ -57,7 +63,7 @@
   </div>
 
   <footer class="support">
-    <p class="support__title">Підтримка та відгуки</p>
+    <p class="support__title" id="supportTitle">Підтримка та відгуки</p>
     <div class="support__row">
       <span class="support__label">E-mail:</span>
       <span class="support__value">support@mil.gov.ua</span>
@@ -65,6 +71,7 @@
       <span class="support__value">+380 66 123 45 67</span>
     </div>
   </footer>
-  <script src="login.js?v=7"></script>
+  <script src="../../js/lang.js?v=1"></script>
+  <script src="login.js?v=9"></script>
 </body>
 </html>

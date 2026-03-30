@@ -1,77 +1,157 @@
+const TRANSLATIONS = {
+  uk: {
+    pageTitle: 'VARTA — Генеральний штаб',
+    topbarTitle: 'Генеральний штаб',
+    logout: 'Вийти',
+    tabUnits: 'Підрозділи',
+    tabHospitals: 'Госпіталі',
+    tabMap: 'Мапа',
+    addUnit: 'Додати підрозділ',
+    addHospital: 'Додати госпіталь',
+    unitsEmpty: 'Немає підрозділів',
+    hospitalsEmpty: 'Немає госпіталів',
+    cardEdit: 'Редагувати',
+    cardDelete: 'Видалити',
+    formAddUnit: 'Новий підрозділ',
+    formAddHospital: 'Новий госпіталь',
+    formEditUnit: 'Редагувати підрозділ',
+    formEditHospital: 'Редагувати госпіталь',
+    labelFieldName: 'Назва (мін. 6 символів)',
+    labelFieldEmail: 'Email',
+    fieldPasswordLabelAdd: 'Пароль (мін. 6 символів)',
+    fieldPasswordLabelEdit: 'Новий пароль',
+    passwordHint: 'Залиште порожнім, якщо не змінюєте пароль',
+    labelFieldCoords: 'Координати (широта, довгота)',
+    labelFieldAddress: 'Адреса (мін. 6 символів)',
+    labelFieldCapacity: 'Місць (мін. 10)',
+    formCancel: 'Скасувати',
+    formSave: 'Зберегти',
+    deleteTitle: 'Видалити',
+    deleteUnit: 'підрозділ',
+    deleteHospital: 'госпіталь',
+    deleteSure: 'Ви впевнені, що хочете видалити',
+    deleteCancel: 'Скасувати',
+    deleteConfirm: 'Видалити',
+    showPassword: 'Показати пароль',
+    hidePassword: 'Приховати пароль',
+    errorRequest: 'Помилка запиту',
+    hospitalCapacity: 'місць',
+    nameMinErr: 'Назва має містити щонайменше 6 символів',
+    emailErr: 'Вкажіть коректний email',
+    coordsErr: "Некоректний формат координат. Використовуйте формат: 'широта, довгота', наприклад '49.9935, 36.2304'",
+    passwordAddErr: 'Пароль має містити щонайменше 6 символів',
+    passwordEditErr: 'Новий пароль має містити щонайменше 6 символів',
+    addressMinErr: 'Адреса має містити щонайменше 6 символів',
+    capacityErr: 'Мінімальна кількість місць у госпіталі — 10',
+  },
+  en: {
+    pageTitle: 'VARTA — General Staff',
+    topbarTitle: 'General Staff',
+    logout: 'Logout',
+    tabUnits: 'Units',
+    tabHospitals: 'Hospitals',
+    tabMap: 'Map',
+    addUnit: 'Add Unit',
+    addHospital: 'Add Hospital',
+    unitsEmpty: 'No units',
+    hospitalsEmpty: 'No hospitals',
+    cardEdit: 'Edit',
+    cardDelete: 'Delete',
+    formAddUnit: 'New Unit',
+    formAddHospital: 'New Hospital',
+    formEditUnit: 'Edit Unit',
+    formEditHospital: 'Edit Hospital',
+    labelFieldName: 'Name (min 6 chars)',
+    labelFieldEmail: 'Email',
+    fieldPasswordLabelAdd: 'Password (min 6 chars)',
+    fieldPasswordLabelEdit: 'New Password',
+    passwordHint: 'Leave blank if not changing password',
+    labelFieldCoords: 'Coordinates (lat, lon)',
+    labelFieldAddress: 'Address (min 6 chars)',
+    labelFieldCapacity: 'Capacity (min 10)',
+    formCancel: 'Cancel',
+    formSave: 'Save',
+    deleteTitle: 'Delete',
+    deleteUnit: 'unit',
+    deleteHospital: 'hospital',
+    deleteSure: 'Are you sure you want to delete',
+    deleteCancel: 'Cancel',
+    deleteConfirm: 'Delete',
+    showPassword: 'Show password',
+    hidePassword: 'Hide password',
+    errorRequest: 'Request error',
+    hospitalCapacity: 'beds',
+    nameMinErr: 'Name must be at least 6 characters',
+    emailErr: 'Enter a valid email',
+    coordsErr: "Invalid coordinates format. Use: 'lat, lon', e.g. '49.9935, 36.2304'",
+    passwordAddErr: 'Password must be at least 6 characters',
+    passwordEditErr: 'New password must be at least 6 characters',
+    addressMinErr: 'Address must be at least 6 characters',
+    capacityErr: 'Minimum hospital capacity is 10',
+  },
+};
+
 if (!getToken() || getRole() !== 'headquarters') {
   window.location.href = '../login/index.html';
 }
 
-const tabUnits = document.getElementById('tabUnits');
-const tabHospitals = document.getElementById('tabHospitals');
-const addBtn = document.getElementById('addBtn');
-const panelUnits = document.getElementById('panelUnits');
-const panelHospitals = document.getElementById('panelHospitals');
-const unitsList = document.getElementById('unitsList');
-const hospitalsList = document.getElementById('hospitalsList');
-const unitsSkeleton = document.getElementById('unitsSkeleton');
-const hospitalsSkeleton = document.getElementById('hospitalsSkeleton');
-const unitsEmpty = document.getElementById('unitsEmpty');
-const hospitalsEmpty = document.getElementById('hospitalsEmpty');
-const listError = document.getElementById('listError');
+let lang = vartaLang.get();
 
-const formModal = document.getElementById('formModal');
-const formModalTitle = document.getElementById('formModalTitle');
-const entityForm = document.getElementById('entityForm');
-const fieldName = document.getElementById('fieldName');
-const fieldEmail = document.getElementById('fieldEmail');
-const fieldPassword = document.getElementById('fieldPassword');
-const fieldPasswordLabel = document.getElementById('fieldPasswordLabel');
-const passwordHint = document.getElementById('passwordHint');
-const fieldCoordinates = document.getElementById('fieldCoordinates');
-const fieldAddressWrap = document.getElementById('fieldAddressWrap');
-const fieldAddress = document.getElementById('fieldAddress');
-const fieldCapacityWrap = document.getElementById('fieldCapacityWrap');
-const fieldCapacity = document.getElementById('fieldCapacity');
-const formError = document.getElementById('formError');
-const formCancelBtn = document.getElementById('formCancelBtn');
-const formSubmitBtn = document.getElementById('formSubmitBtn');
-const toggleFieldPassword = document.getElementById('toggleFieldPassword');
-const fieldPasswordIconEye = document.getElementById('fieldPasswordIconEye');
+function t(key) { return TRANSLATIONS[lang][key]; }
+
+const tabUnits          = document.getElementById('tabUnits');
+const tabHospitals      = document.getElementById('tabHospitals');
+const addBtn            = document.getElementById('addBtn');
+const panelUnits        = document.getElementById('panelUnits');
+const panelHospitals    = document.getElementById('panelHospitals');
+const unitsList         = document.getElementById('unitsList');
+const hospitalsList     = document.getElementById('hospitalsList');
+const unitsSkeleton     = document.getElementById('unitsSkeleton');
+const hospitalsSkeleton = document.getElementById('hospitalsSkeleton');
+const unitsEmpty        = document.getElementById('unitsEmpty');
+const hospitalsEmpty    = document.getElementById('hospitalsEmpty');
+const listError         = document.getElementById('listError');
+
+const formModal             = document.getElementById('formModal');
+const formModalTitle        = document.getElementById('formModalTitle');
+const entityForm            = document.getElementById('entityForm');
+const fieldName             = document.getElementById('fieldName');
+const fieldEmail            = document.getElementById('fieldEmail');
+const fieldPassword         = document.getElementById('fieldPassword');
+const fieldPasswordLabel    = document.getElementById('fieldPasswordLabel');
+const passwordHint          = document.getElementById('passwordHint');
+const fieldCoordinates      = document.getElementById('fieldCoordinates');
+const fieldAddressWrap      = document.getElementById('fieldAddressWrap');
+const fieldAddress          = document.getElementById('fieldAddress');
+const fieldCapacityWrap     = document.getElementById('fieldCapacityWrap');
+const fieldCapacity         = document.getElementById('fieldCapacity');
+const formError             = document.getElementById('formError');
+const formCancelBtn         = document.getElementById('formCancelBtn');
+const formSubmitBtn         = document.getElementById('formSubmitBtn');
+const toggleFieldPassword   = document.getElementById('toggleFieldPassword');
+const fieldPasswordIconEye    = document.getElementById('fieldPasswordIconEye');
 const fieldPasswordIconEyeOff = document.getElementById('fieldPasswordIconEyeOff');
 
-const deleteModal = document.getElementById('deleteModal');
+const deleteModal     = document.getElementById('deleteModal');
 const deleteModalText = document.getElementById('deleteModalText');
 const deleteCancelBtn = document.getElementById('deleteCancelBtn');
 const deleteConfirmBtn = document.getElementById('deleteConfirmBtn');
 
 document.getElementById('logoutBtn').addEventListener('click', logout);
 
-function resetPasswordFieldVisibility() {
-  fieldPassword.type = 'password';
-  fieldPasswordIconEye.style.display = 'none';
-  fieldPasswordIconEyeOff.style.display = 'block';
-  toggleFieldPassword.setAttribute('aria-label', 'Показати пароль');
-}
-
-toggleFieldPassword.addEventListener('click', () => {
-  const isPassword = fieldPassword.type === 'password';
-  fieldPassword.type = isPassword ? 'text' : 'password';
-  fieldPasswordIconEye.style.display = isPassword ? 'block' : 'none';
-  fieldPasswordIconEyeOff.style.display = isPassword ? 'none' : 'block';
-  toggleFieldPassword.setAttribute('aria-label', isPassword ? 'Приховати пароль' : 'Показати пароль');
-});
-
-let activeTab = 'units';
-let formMode = 'add';
-let formEntity = 'unit';
-let editingId = null;
-let deleteTarget = null;
-let unitsLoaded = false;
+let activeTab       = 'units';
+let formMode        = 'add';
+let formEntity      = 'unit';
+let editingId       = null;
+let deleteTarget    = null;
+let unitsLoaded     = false;
 let hospitalsLoaded = false;
-let unitsCache = [];
-let hospitalsCache = [];
+let unitsCache      = [];
+let hospitalsCache  = [];
 
-const MIN_STR_LEN = 6;
-const MIN_PASSWORD_LEN = 6;
+const MIN_STR_LEN           = 6;
+const MIN_PASSWORD_LEN      = 6;
 const MIN_HOSPITAL_CAPACITY = 10;
-const COORDINATES_ERROR =
-  "Некоректний формат координат. Використовуйте формат: 'широта, довгота', наприклад '49.9935, 36.2304'";
 
 function isValidCoordinates(s) {
   const segments = s.split(',');
@@ -89,17 +169,32 @@ function formatApiDetail(detail) {
       .map((e) => (e && typeof e.msg === 'string' ? e.msg : JSON.stringify(e)))
       .join('; ');
   }
-  return 'Помилка запиту';
+  return t('errorRequest');
 }
 
 async function readError(res) {
   try {
     const data = await res.json();
-    return formatApiDetail(data.detail) || 'Помилка запиту';
+    return formatApiDetail(data.detail) || t('errorRequest');
   } catch {
-    return 'Помилка запиту';
+    return t('errorRequest');
   }
 }
+
+function resetPasswordFieldVisibility() {
+  fieldPassword.type = 'password';
+  fieldPasswordIconEye.style.display = 'none';
+  fieldPasswordIconEyeOff.style.display = 'block';
+  toggleFieldPassword.setAttribute('aria-label', t('showPassword'));
+}
+
+toggleFieldPassword.addEventListener('click', () => {
+  const isPassword = fieldPassword.type === 'password';
+  fieldPassword.type = isPassword ? 'text' : 'password';
+  fieldPasswordIconEye.style.display = isPassword ? 'block' : 'none';
+  fieldPasswordIconEyeOff.style.display = isPassword ? 'none' : 'block';
+  toggleFieldPassword.setAttribute('aria-label', t(isPassword ? 'hidePassword' : 'showPassword'));
+});
 
 function setTabUi() {
   const isUnits = activeTab === 'units';
@@ -109,7 +204,7 @@ function setTabUi() {
   tabHospitals.setAttribute('aria-selected', !isUnits);
   panelUnits.hidden = !isUnits;
   panelHospitals.hidden = isUnits;
-  addBtn.textContent = isUnits ? 'Додати підрозділ' : 'Додати госпіталь';
+  addBtn.textContent = isUnits ? t('addUnit') : t('addHospital');
 }
 
 function switchTab(tab) {
@@ -137,8 +232,8 @@ function renderUnitCard(u) {
       <p class="entity-card__meta"></p>
     </div>
     <div class="entity-card__actions">
-      <button type="button" class="entity-card__btn entity-card__btn--edit" data-action="edit">Редагувати</button>
-      <button type="button" class="entity-card__btn entity-card__btn--delete" data-action="delete">Видалити</button>
+      <button type="button" class="entity-card__btn entity-card__btn--edit" data-action="edit">${t('cardEdit')}</button>
+      <button type="button" class="entity-card__btn entity-card__btn--delete" data-action="delete">${t('cardDelete')}</button>
     </div>
   `;
   card.querySelector('.entity-card__title').textContent = u.name;
@@ -163,8 +258,8 @@ function renderHospitalCard(h) {
       <p class="entity-card__meta"></p>
     </div>
     <div class="entity-card__actions">
-      <button type="button" class="entity-card__btn entity-card__btn--edit" data-action="edit">Редагувати</button>
-      <button type="button" class="entity-card__btn entity-card__btn--delete" data-action="delete">Видалити</button>
+      <button type="button" class="entity-card__btn entity-card__btn--edit" data-action="edit">${t('cardEdit')}</button>
+      <button type="button" class="entity-card__btn entity-card__btn--delete" data-action="delete">${t('cardDelete')}</button>
     </div>
   `;
   card.querySelector('.entity-card__title').textContent = h.name;
@@ -174,7 +269,7 @@ function renderHospitalCard(h) {
   metaEl.append(document.createElement('br'));
   metaEl.append(document.createTextNode(h.address));
   metaEl.append(document.createElement('br'));
-  metaEl.append(document.createTextNode(`${h.capacity_total} місць`));
+  metaEl.append(document.createTextNode(`${h.capacity_total} ${t('hospitalCapacity')}`));
   metaEl.append(document.createElement('br'));
   metaEl.append(document.createTextNode(h.coordinates));
 
@@ -271,11 +366,11 @@ function applyFormLayout() {
   }
   if (formMode === 'add') {
     fieldPassword.required = true;
-    fieldPasswordLabel.textContent = 'Пароль (мін. 6 символів)';
+    fieldPasswordLabel.textContent = t('fieldPasswordLabelAdd');
     passwordHint.hidden = true;
   } else {
     fieldPassword.required = false;
-    fieldPasswordLabel.textContent = 'Новий пароль';
+    fieldPasswordLabel.textContent = t('fieldPasswordLabelEdit');
     passwordHint.hidden = false;
   }
 }
@@ -288,11 +383,7 @@ function openFormAdd() {
   resetPasswordFieldVisibility();
   formError.hidden = true;
   applyFormLayout();
-  if (formEntity === 'unit') {
-    formModalTitle.textContent = 'Новий підрозділ';
-  } else {
-    formModalTitle.textContent = 'Новий госпіталь';
-  }
+  formModalTitle.textContent = formEntity === 'unit' ? t('formAddUnit') : t('formAddHospital');
   formModal.hidden = false;
 }
 
@@ -315,7 +406,7 @@ function openFormEdit(kind, row) {
     fieldCapacity.value = '';
   }
   applyFormLayout();
-  formModalTitle.textContent = kind === 'unit' ? 'Редагувати підрозділ' : 'Редагувати госпіталь';
+  formModalTitle.textContent = kind === 'unit' ? t('formEditUnit') : t('formEditHospital');
   formModal.hidden = false;
 }
 
@@ -332,12 +423,12 @@ entityForm.addEventListener('submit', async (e) => {
   e.preventDefault();
   formError.hidden = true;
 
-  const name = fieldName.value.trim();
-  const email = fieldEmail.value.trim();
-  const password = fieldPassword.value;
-  const coordinates = fieldCoordinates.value.trim();
-  const address = fieldAddress.value.trim();
-  const capRaw = fieldCapacity.value;
+  const name         = fieldName.value.trim();
+  const email        = fieldEmail.value.trim();
+  const password     = fieldPassword.value;
+  const coordinates  = fieldCoordinates.value.trim();
+  const address      = fieldAddress.value.trim();
+  const capRaw       = fieldCapacity.value;
   const capacity_total = capRaw === '' ? NaN : parseInt(capRaw, 10);
 
   function fail(msg) {
@@ -345,40 +436,25 @@ entityForm.addEventListener('submit', async (e) => {
     formError.hidden = false;
   }
 
-  if (name.length < MIN_STR_LEN) {
-    fail(`Назва має містити щонайменше ${MIN_STR_LEN} символів`);
-    return;
-  }
+  if (name.length < MIN_STR_LEN) { fail(t('nameMinErr')); return; }
 
   fieldEmail.value = email;
-  if (!email || !fieldEmail.checkValidity()) {
-    fail('Вкажіть коректний email');
-    return;
-  }
+  if (!email || !fieldEmail.checkValidity()) { fail(t('emailErr')); return; }
 
-  if (!isValidCoordinates(coordinates)) {
-    fail(COORDINATES_ERROR);
-    return;
-  }
+  if (!isValidCoordinates(coordinates)) { fail(t('coordsErr')); return; }
 
   if (formMode === 'add' && (!password || password.length < MIN_PASSWORD_LEN)) {
-    fail(`Пароль має містити щонайменше ${MIN_PASSWORD_LEN} символів`);
-    return;
+    fail(t('passwordAddErr')); return;
   }
 
   if (formMode === 'edit' && password.length > 0 && password.length < MIN_PASSWORD_LEN) {
-    fail(`Новий пароль має містити щонайменше ${MIN_PASSWORD_LEN} символів`);
-    return;
+    fail(t('passwordEditErr')); return;
   }
 
   if (formEntity === 'hospital') {
-    if (address.length < MIN_STR_LEN) {
-      fail(`Адреса має містити щонайменше ${MIN_STR_LEN} символів`);
-      return;
-    }
+    if (address.length < MIN_STR_LEN) { fail(t('addressMinErr')); return; }
     if (!Number.isFinite(capacity_total) || !Number.isInteger(capacity_total) || capacity_total < MIN_HOSPITAL_CAPACITY) {
-      fail('Мінімальна кількість місць у госпіталі — 10');
-      return;
+      fail(t('capacityErr')); return;
     }
   }
 
@@ -392,30 +468,15 @@ entityForm.addEventListener('submit', async (e) => {
           body: JSON.stringify({ name, email, password, coordinates }),
         });
         if (!res) return;
-        if (!res.ok) {
-          formError.textContent = await readError(res);
-          formError.hidden = false;
-          return;
-        }
+        if (!res.ok) { formError.textContent = await readError(res); formError.hidden = false; return; }
         if (activeTab === 'units') await loadUnits();
       } else {
         const res = await apiFetch('/headquarters/hospitals', {
           method: 'POST',
-          body: JSON.stringify({
-            name,
-            email,
-            password,
-            address,
-            coordinates,
-            capacity_total,
-          }),
+          body: JSON.stringify({ name, email, password, address, coordinates, capacity_total }),
         });
         if (!res) return;
-        if (!res.ok) {
-          formError.textContent = await readError(res);
-          formError.hidden = false;
-          return;
-        }
+        if (!res.ok) { formError.textContent = await readError(res); formError.hidden = false; return; }
         if (activeTab === 'hospitals') await loadHospitals();
       }
     } else {
@@ -429,16 +490,9 @@ entityForm.addEventListener('submit', async (e) => {
         formEntity === 'unit'
           ? `/headquarters/army_units/${editingId}`
           : `/headquarters/hospitals/${editingId}`;
-      const res = await apiFetch(path, {
-        method: 'PATCH',
-        body: JSON.stringify(patch),
-      });
+      const res = await apiFetch(path, { method: 'PATCH', body: JSON.stringify(patch) });
       if (!res) return;
-      if (!res.ok) {
-        formError.textContent = await readError(res);
-        formError.hidden = false;
-        return;
-      }
+      if (!res.ok) { formError.textContent = await readError(res); formError.hidden = false; return; }
       if (formEntity === 'unit') {
         await loadUnits();
       } else {
@@ -453,8 +507,8 @@ entityForm.addEventListener('submit', async (e) => {
 
 function openDeleteModal(target) {
   deleteTarget = target;
-  const label = target.kind === 'unit' ? 'підрозділ' : 'госпіталь';
-  deleteModalText.innerHTML = `Ви впевнені, що хочете видалити ${label} <strong></strong>?`;
+  const kindLabel = target.kind === 'unit' ? t('deleteUnit') : t('deleteHospital');
+  deleteModalText.innerHTML = `${t('deleteSure')} ${kindLabel} <strong></strong>?`;
   deleteModalText.querySelector('strong').textContent = target.name;
   deleteModal.hidden = false;
 }
@@ -468,13 +522,13 @@ deleteCancelBtn.addEventListener('click', closeDeleteModal);
 
 deleteConfirmBtn.addEventListener('click', async () => {
   if (!deleteTarget) return;
-  const t = deleteTarget;
+  const tgt = deleteTarget;
   deleteConfirmBtn.disabled = true;
   try {
     const path =
-      t.kind === 'unit'
-        ? `/headquarters/army_units/${t.id}`
-        : `/headquarters/hospitals/${t.id}`;
+      tgt.kind === 'unit'
+        ? `/headquarters/army_units/${tgt.id}`
+        : `/headquarters/hospitals/${tgt.id}`;
     const res = await apiFetch(path, { method: 'DELETE' });
     if (!res) return;
     if (!res.ok) {
@@ -483,7 +537,7 @@ deleteConfirmBtn.addEventListener('click', async () => {
       return;
     }
     closeDeleteModal();
-    if (t.kind === 'unit') {
+    if (tgt.kind === 'unit') {
       await loadUnits();
     } else {
       await loadHospitals();
@@ -493,5 +547,55 @@ deleteConfirmBtn.addEventListener('click', async () => {
   }
 });
 
-setTabUi();
+function applyLang() {
+  document.documentElement.lang = lang;
+  document.title = t('pageTitle');
+  document.getElementById('topbarTitle').textContent = t('topbarTitle');
+  document.getElementById('logoutText').textContent = t('logout');
+  document.getElementById('logoutBtn').title = t('logout');
+
+  tabUnits.textContent = t('tabUnits');
+  tabHospitals.textContent = t('tabHospitals');
+  document.getElementById('tabMap').textContent = t('tabMap');
+
+  unitsEmpty.textContent = t('unitsEmpty');
+  hospitalsEmpty.textContent = t('hospitalsEmpty');
+
+  document.getElementById('labelFieldName').textContent = t('labelFieldName');
+  document.getElementById('labelFieldEmail').textContent = t('labelFieldEmail');
+  document.getElementById('labelFieldCoords').textContent = t('labelFieldCoords');
+  document.getElementById('labelFieldAddress').textContent = t('labelFieldAddress');
+  document.getElementById('labelFieldCapacity').textContent = t('labelFieldCapacity');
+  passwordHint.textContent = t('passwordHint');
+
+  formCancelBtn.textContent = t('formCancel');
+  formSubmitBtn.textContent = t('formSave');
+
+  document.getElementById('deleteModalTitle').textContent = t('deleteTitle');
+  deleteCancelBtn.textContent = t('deleteCancel');
+  deleteConfirmBtn.textContent = t('deleteConfirm');
+
+  document.querySelectorAll('.lang-switcher__btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.lang === lang);
+  });
+
+  setTabUi();
+  applyFormLayout();
+
+  if (unitsLoaded) renderUnits();
+  if (hospitalsLoaded) renderHospitals();
+}
+
+window.addEventListener('varta:langchange', (e) => {
+  lang = e.detail.lang;
+  applyLang();
+});
+
+document.querySelectorAll('.lang-switcher__btn').forEach((btn) => {
+  btn.addEventListener('click', () => {
+    vartaLang.set(btn.dataset.lang);
+  });
+});
+
+applyLang();
 loadUnits();

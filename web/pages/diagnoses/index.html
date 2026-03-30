@@ -4,8 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>VARTA — Діагнози</title>
-  <link rel="stylesheet" href="../../css/tokens.css?v=2" />
-  <link rel="stylesheet" href="diagnoses.css" />
+  <link rel="stylesheet" href="../../css/tokens.css?v=3" />
+  <link rel="stylesheet" href="../../css/lang-switcher.css?v=2" />
+  <link rel="stylesheet" href="diagnoses.css?v=3" />
 </head>
 <body>
 
@@ -17,12 +18,16 @@
       <h1 class="topbar__title" id="pageTitle"></h1>
     </div>
     <div class="topbar__right">
+      <div class="lang-switcher">
+        <button type="button" class="lang-switcher__btn" data-lang="uk">UA</button>
+        <button type="button" class="lang-switcher__btn" data-lang="en">EN</button>
+      </div>
       <a class="btn-logout" href="../hospital/index.html">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <line x1="19" y1="12" x2="5" y2="12"/>
           <polyline points="12 19 5 12 12 5"/>
         </svg>
-        Назад
+        <span id="backText">Назад</span>
       </a>
     </div>
   </header>
@@ -46,11 +51,11 @@
         <h2 class="add-panel__title" id="formHeading">Новий діагноз</h2>
         <div class="add-panel__divider"></div>
         <div class="add-panel__field">
-          <label class="add-panel__label" for="diagnosisText">Опис діагнозу</label>
+          <label class="add-panel__label" id="labelDiagText" for="diagnosisText">Опис діагнозу</label>
           <textarea class="add-panel__textarea" id="diagnosisText" rows="1" placeholder="Введіть текст діагнозу..."></textarea>
         </div>
         <div class="add-panel__field">
-          <label class="add-panel__label" for="severitySelect">Тяжкість</label>
+          <label class="add-panel__label" id="labelSeverity" for="severitySelect">Тяжкість</label>
           <select class="add-panel__select" id="severitySelect">
             <option value="Легке">Легке</option>
             <option value="Середнє" selected>Середнє</option>
@@ -64,7 +69,8 @@
     </div>
   </main>
 
+  <script src="../../js/lang.js?v=1"></script>
   <script src="../../js/api.js?v=2"></script>
-  <script src="diagnoses.js"></script>
+  <script src="diagnoses.js?v=3"></script>
 </body>
 </html>

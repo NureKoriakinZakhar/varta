@@ -5,8 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>VARTA — Генеральний штаб</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
-  <link rel="stylesheet" href="../../../css/tokens.css?v=2" />
-  <link rel="stylesheet" href="infrastructure.css?v=3" />
+  <link rel="stylesheet" href="../../../css/tokens.css?v=3" />
+  <link rel="stylesheet" href="../../../css/lang-switcher.css?v=2" />
+  <link rel="stylesheet" href="infrastructure.css?v=5" />
 </head>
 <body>
 
@@ -15,26 +16,31 @@
       <img class="topbar__logo" src="../../../assets/logo.webp" alt="VARTA" />
     </div>
     <div class="topbar__center">
-      <h1 class="topbar__title">Генеральний штаб</h1>
+      <h1 class="topbar__title" id="topbarTitle">Генеральний штаб</h1>
     </div>
     <div class="topbar__right">
+      <div class="lang-switcher">
+        <button type="button" class="lang-switcher__btn" data-lang="uk">UA</button>
+        <button type="button" class="lang-switcher__btn" data-lang="en">EN</button>
+      </div>
       <a class="btn-logout" href="../index.html">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <line x1="19" y1="12" x2="5" y2="12"/>
           <polyline points="12 19 5 12 12 5"/>
         </svg>
-        Назад
+        <span id="backText">Назад</span>
       </a>
     </div>
   </header>
 
   <main class="map-shell">
     <p class="map-error" id="mapError" hidden></p>
-    <div id="map" class="map-root" role="application" aria-label="Інфраструктура на мапі"></div>
+    <div id="map" class="map-root" role="application"></div>
   </main>
 
+  <script src="../../../js/lang.js?v=1"></script>
   <script src="../../../js/api.js?v=2"></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-  <script src="infrastructure.js?v=5"></script>
+  <script src="infrastructure.js?v=7"></script>
 </body>
 </html>

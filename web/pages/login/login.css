@@ -177,3 +177,9 @@ body {
   color: var(--color-text-primary);
   padding: 4px 0;
 }
+
+.lang-switcher--page {
+  position: fixed;
+  top: 16px;
+  right: 20px;
+}
