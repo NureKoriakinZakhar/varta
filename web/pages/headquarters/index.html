@@ -6,7 +6,7 @@
   <title>VARTA — Генеральний штаб</title>
   <link rel="stylesheet" href="../../css/tokens.css?v=3" />
   <link rel="stylesheet" href="../../css/lang-switcher.css?v=2" />
-  <link rel="stylesheet" href="headquarters.css?v=8" />
+  <link rel="stylesheet" href="headquarters.css?v=9" />
 </head>
 <body>
 
@@ -44,6 +44,12 @@
       </div>
       <button type="button" class="btn-primary" id="addBtn">Додати підрозділ</button>
     </div>
+
+    <section class="forces-overview" id="forcesOverview" aria-labelledby="forcesOverviewTitle">
+      <h2 class="forces-overview__title visually-hidden" id="forcesOverviewTitle"></h2>
+      <div class="forces-overview__grid" id="forcesOverviewGrid"></div>
+      <p class="forces-overview__err" id="forcesOverviewErr" hidden></p>
+    </section>
 
     <div class="list-wrap" id="panelUnits">
       <div class="entity-list" id="unitsList">
@@ -130,6 +136,21 @@
     </div>
   </div>
 
+  <div class="modal-overlay" id="unitDetailModal" hidden>
+    <div class="modal modal--unit-detail">
+      <h3 class="modal__title" id="unitDetailTitle"></h3>
+      <div class="unit-detail__summary" id="unitDetailSummary"></div>
+      <h4 class="unit-detail__subtitle" id="unitDetailSoldiersHeading"></h4>
+      <div class="unit-detail__scroll" id="unitDetailSoldiers"></div>
+      <h4 class="unit-detail__subtitle" id="unitDetailPointsHeading"></h4>
+      <div class="unit-detail__scroll unit-detail__scroll--short" id="unitDetailPoints"></div>
+      <p class="unit-detail__err" id="unitDetailErr" hidden></p>
+      <div class="modal__actions modal__actions--start">
+        <button type="button" class="modal__btn modal__btn--cancel" id="unitDetailCloseBtn"></button>
+      </div>
+    </div>
+  </div>
+
   <div class="modal-overlay" id="deleteModal" hidden>
     <div class="modal">
       <h3 class="modal__title" id="deleteModalTitle">Видалити</h3>
@@ -143,6 +164,6 @@
 
   <script src="../../js/lang.js?v=1"></script>
   <script src="../../js/api.js?v=2"></script>
-  <script src="headquarters.js?v=10"></script>
+  <script src="headquarters.js?v=11"></script>
 </body>
 </html>

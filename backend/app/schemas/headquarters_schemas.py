@@ -63,3 +63,23 @@ class EvacuationPointItem(BaseModel):
 
 class DetailResponse(BaseModel):
     detail: str
+
+
+class ForcesOverviewResponse(BaseModel):
+    total_soldiers: int
+    soldiers_in_hospital: int
+    soldiers_not_in_hospital: int
+    soldiers_in_hospital_percent: float
+    soldiers_not_in_hospital_percent: float
+    army_units_count: int
+    hospitals_count: int
+
+
+class ArmyUnitSummaryResponse(BaseModel):
+    army_unit_id: int
+    army_unit_name: str
+    total_soldiers: int
+    soldiers_in_hospital: int
+    soldiers_not_in_hospital: int
+    soldiers_in_hospital_percent: float
+    soldiers_not_in_hospital_percent: float

@@ -1,12 +1,11 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from datetime import datetime, date
-from sqlalchemy import func, and_
-from datetime import datetime, timedelta
 from app.db.database import get_db
 from app.db import models
 from app.schemas import army_units_schemas
 from app.core.security import role_required
+from app.services import army_unit_data
 
 router = APIRouter(prefix="/army_units", tags=["Army Units"])
 
@@ -155,164 +154,9 @@ def delete_evacuation_point(request: army_units_schemas.DeleteEvacuationPointReq
 @router.get("/all_points", response_model=list[army_units_schemas.EvacuationPoint], status_code=status.HTTP_200_OK)
 def get_all_points(db: Session = Depends(get_db), current_user: dict = Depends(role_required(["army_unit"]))):
     army_unit_id = current_user["user_id"]
-
-    # Вивід точок евакуації
-    points = db.query(models.EvacuationPoint).filter_by(army_unit_id=army_unit_id).all()
-    return [
-        army_units_schemas.EvacuationPoint(
-            id=p.id,
-            name=p.name,
-            coordinates=p.coordinates,
-            description=p.description
-        )
-        for p in points
-    ]
+    return army_unit_data.list_evacuation_points_for_unit(db, army_unit_id)
 
 @router.get("/all_soldiers", response_model=list[army_units_schemas.SoldierItem], status_code=status.HTTP_200_OK)
 def get_all_soldiers(db: Session = Depends(get_db), current_user: dict = Depends(role_required(["army_unit"]))):
     army_unit_id = current_user["user_id"]
-
-    soldiers_with_devices = (
-        db.query(models.Soldier, models.IoTDevice)
-        .join(models.IoTDevice, models.IoTDevice.soldier_id == models.Soldier.id)
-        .filter(models.Soldier.army_unit_id == army_unit_id)
-        .all()
-    )
-
-    if not soldiers_with_devices:
-        return []  # Повертаємо порожній список
-
-    soldiers_out = []
-    soldiers_needing_metrics = []
-
-    for soldier, device in soldiers_with_devices:
-        birth_date = f"{soldier.birth_day:02d}.{soldier.birth_month:02d}.{soldier.birth_year}"
-        full_name = f"{soldier.last_name} {soldier.first_name}" + (
-            f" {soldier.middle_name}" if soldier.middle_name else "")
-
-        if soldier.hospital_id is not None:
-            soldiers_out.append(
-                army_units_schemas.SoldierItem(
-                    soldier_id=soldier.id,
-                    full_name=full_name,
-                    birth_date=birth_date,
-                    rank=soldier.rank,
-                    iot_serial=device.device_serial,
-                    status="На лікуванні",
-                    coordinates=None,
-                    metrics=None,
-                    hospital_id=soldier.hospital_id,
-                )
-            )
-        else:
-            soldiers_needing_metrics.append((soldier, device))
-
-    if not soldiers_needing_metrics:
-        return soldiers_out
-
-    device_ids = [dev.id for _, dev in soldiers_needing_metrics]
-
-    # Перевірка наявності метрик
-    has_metrics = (
-            db.query(models.IoTMetric.id)
-            .filter(models.IoTMetric.iot_device_id.in_(device_ids))
-            .first() is not None
-    )
-
-    if not has_metrics:
-        for soldier, device in soldiers_needing_metrics:
-            birth_date = f"{soldier.birth_day:02d}.{soldier.birth_month:02d}.{soldier.birth_year}"
-            soldiers_out.append(
-                army_units_schemas.SoldierItem(
-                    soldier_id=soldier.id,
-                    full_name=f"{soldier.last_name} {soldier.first_name}" + (
-                        f" {soldier.middle_name}" if soldier.middle_name else ""),
-                    rank=soldier.rank,
-                    birth_date=birth_date,
-                    coordinates=None,
-                    status="Немає даних",
-                    iot_serial=device.device_serial,
-                    metrics=None,
-                )
-            )
-        return soldiers_out
-
-    # Отримання останніх метрик
-    subq = (
-        db.query(
-            models.IoTMetric.iot_device_id,
-            func.max(models.IoTMetric.last_update).label("max_last_update"),
-        )
-        .filter(models.IoTMetric.iot_device_id.in_(device_ids))
-        .group_by(models.IoTMetric.iot_device_id)
-        .subquery()
-    )
-
-    latest_metrics = (
-        db.query(models.IoTMetric)
-        .join(
-            subq,
-            and_(
-                models.IoTMetric.iot_device_id == subq.c.iot_device_id,
-                models.IoTMetric.last_update == subq.c.max_last_update,
-            ),
-        )
-        .all()
-    )
-
-    metric_by_device = {m.iot_device_id: m for m in latest_metrics}
-
-    def compute_status(m: models.IoTMetric | None) -> str:
-        if m is None: return "Немає даних"
-        score = 0
-        now = datetime.utcnow()
-        if m.last_update < now - timedelta(minutes=30):
-            score = max(score, 2)
-        elif m.last_update < now - timedelta(minutes=10):
-            score = max(score, 1)
-        if m.battery_percent <= 10:
-            score = max(score, 2)
-        elif m.battery_percent <= 20:
-            score = max(score, 1)
-        try:
-            t = float(m.temperature)
-            if t < 34.0 or t >= 39.5:
-                score = max(score, 2)
-            elif t < 35.0 or t >= 38.5:
-                score = max(score, 1)
-        except:
-            pass
-        hr = m.heart_rate
-        if hr:
-            if hr < 40 or hr > 130:
-                score = max(score, 2)
-            elif hr < 50 or hr > 110:
-                score = max(score, 1)
-        return ["Good", "Warning", "Critical"][score]
-
-    for soldier, device in soldiers_needing_metrics:
-        metric = metric_by_device.get(device.id)
-        birth_date = f"{soldier.birth_day:02d}.{soldier.birth_month:02d}.{soldier.birth_year}"
-
-        soldiers_out.append(
-            army_units_schemas.SoldierItem(
-                soldier_id=soldier.id,
-                full_name=f"{soldier.last_name} {soldier.first_name}" + (
-                    f" {soldier.middle_name}" if soldier.middle_name else ""),
-                birth_date=birth_date,
-                rank=soldier.rank,
-                coordinates=metric.gps_location if metric else None,
-                status=compute_status(metric),
-                iot_serial=device.device_serial,
-                metrics=(
-                    army_units_schemas.SoldierMetrics(
-                        battery_percent=metric.battery_percent,
-                        temperature=float(metric.temperature),
-                        heart_rate=metric.heart_rate,
-                        last_update=metric.last_update,
-                    ) if metric else None
-                ),
-            )
-        )
-
-    return soldiers_out
+    return army_unit_data.list_soldier_items_for_unit(db, army_unit_id)
