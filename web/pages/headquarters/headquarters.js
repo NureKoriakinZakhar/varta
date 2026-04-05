@@ -43,6 +43,7 @@ const TRANSLATIONS = {
     passwordEditErr: 'Новий пароль має містити щонайменше 6 символів',
     addressMinErr: 'Адреса має містити щонайменше 6 символів',
     capacityErr: 'Мінімальна кількість місць у госпіталі — 10',
+    pickOnMap: 'Обрати координати на мапі',
   },
   en: {
     pageTitle: 'VARTA — General Staff',
@@ -88,8 +89,12 @@ const TRANSLATIONS = {
     passwordEditErr: 'New password must be at least 6 characters',
     addressMinErr: 'Address must be at least 6 characters',
     capacityErr: 'Minimum hospital capacity is 10',
+    pickOnMap: 'Pick coordinates on the map',
   },
 };
+
+const STORAGE_FORM_DRAFT = 'varta_hq_form_draft';
+const STORAGE_MAP_RESULT = 'varta_hq_map_result';
 
 if (!getToken() || getRole() !== 'headquarters') {
   window.location.href = '../login/index.html';
@@ -131,6 +136,7 @@ const formSubmitBtn         = document.getElementById('formSubmitBtn');
 const toggleFieldPassword   = document.getElementById('toggleFieldPassword');
 const fieldPasswordIconEye    = document.getElementById('fieldPasswordIconEye');
 const fieldPasswordIconEyeOff = document.getElementById('fieldPasswordIconEyeOff');
+const openCoordMapBtn         = document.getElementById('openCoordMapBtn');
 
 const deleteModal     = document.getElementById('deleteModal');
 const deleteModalText = document.getElementById('deleteModalText');
@@ -415,7 +421,64 @@ function closeFormModal() {
   formError.hidden = true;
 }
 
+function buildFormDraft() {
+  return {
+    formMode,
+    formEntity,
+    editingId,
+    name: fieldName.value,
+    email: fieldEmail.value,
+    coordinates: fieldCoordinates.value,
+    address: fieldAddress.value,
+    capacity: fieldCapacity.value,
+  };
+}
+
+function restoreFormFromStoredDraft(d) {
+  formMode = d.formMode;
+  formEntity = d.formEntity;
+  editingId = d.editingId;
+  const wantTab = d.formEntity === 'unit' ? 'units' : 'hospitals';
+  if (activeTab !== wantTab) switchTab(wantTab);
+  fieldName.value = d.name || '';
+  fieldEmail.value = d.email || '';
+  fieldPassword.value = '';
+  fieldCoordinates.value = d.coordinates || '';
+  fieldAddress.value = d.address || '';
+  fieldCapacity.value = d.capacity != null && d.capacity !== '' ? String(d.capacity) : '';
+  resetPasswordFieldVisibility();
+  applyFormLayout();
+  const isUnit = formEntity === 'unit';
+  if (formMode === 'add') {
+    formModalTitle.textContent = isUnit ? t('formAddUnit') : t('formAddHospital');
+  } else {
+    formModalTitle.textContent = isUnit ? t('formEditUnit') : t('formEditHospital');
+  }
+  formModal.hidden = false;
+  formError.hidden = true;
+}
+
+function consumeMapReturn() {
+  const res = sessionStorage.getItem(STORAGE_MAP_RESULT);
+  if (res !== 'confirmed' && res !== 'cancelled') return;
+  sessionStorage.removeItem(STORAGE_MAP_RESULT);
+  const raw = sessionStorage.getItem(STORAGE_FORM_DRAFT);
+  if (!raw) return;
+  try {
+    const d = JSON.parse(raw);
+    sessionStorage.removeItem(STORAGE_FORM_DRAFT);
+    restoreFormFromStoredDraft(d);
+  } catch {
+    sessionStorage.removeItem(STORAGE_FORM_DRAFT);
+  }
+}
+
 formCancelBtn.addEventListener('click', closeFormModal);
+
+openCoordMapBtn.addEventListener('click', () => {
+  sessionStorage.setItem(STORAGE_FORM_DRAFT, JSON.stringify(buildFormDraft()));
+  window.location.href = 'infrastructure/index.html?pick=1';
+});
 
 addBtn.addEventListener('click', openFormAdd);
 
@@ -575,6 +638,8 @@ function applyLang() {
   deleteCancelBtn.textContent = t('deleteCancel');
   deleteConfirmBtn.textContent = t('deleteConfirm');
 
+  openCoordMapBtn.setAttribute('aria-label', t('pickOnMap'));
+
   document.querySelectorAll('.lang-switcher__btn').forEach(btn => {
     btn.classList.toggle('active', btn.dataset.lang === lang);
   });
@@ -598,4 +663,6 @@ document.querySelectorAll('.lang-switcher__btn').forEach((btn) => {
 });
 
 applyLang();
-loadUnits();
+consumeMapReturn();
+if (activeTab === 'units') loadUnits();
+else loadHospitals();

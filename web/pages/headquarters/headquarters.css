@@ -470,6 +470,40 @@ body {
   height: 20px;
 }
 
+.entity-form__coords-wrap {
+  position: relative;
+  width: 100%;
+}
+
+.entity-form__input--coords {
+  padding-right: 44px;
+}
+
+.entity-form__coords-map-btn {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  color: var(--color-text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s;
+}
+
+.entity-form__coords-map-btn:hover {
+  color: var(--color-text-primary);
+}
+
+.entity-form__coords-map-btn svg {
+  width: 20px;
+  height: 20px;
+}
+
 .entity-form__input--number {
   -moz-appearance: textfield;
   appearance: textfield;

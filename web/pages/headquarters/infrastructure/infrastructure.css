@@ -112,6 +112,46 @@ body {
   z-index: 0;
 }
 
+.map-pick-bar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 900;
+  padding: 16px 20px calc(16px + env(safe-area-inset-bottom, 0));
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.55), transparent);
+}
+
+.map-pick-bar__btn {
+  pointer-events: auto;
+  background-color: var(--color-accent);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 14px 28px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  transition: background-color 0.2s, opacity 0.2s;
+}
+
+.map-pick-bar__btn:hover {
+  background-color: var(--color-accent-hover);
+}
+
+.map-pick-bar__btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+body.map-page--pick-mode .map-root {
+  cursor: crosshair;
+}
+
 .leaflet-container {
   font-family: var(--font-family);
 }
