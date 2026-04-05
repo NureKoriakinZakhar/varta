@@ -6,8 +6,13 @@ const TRANSLATIONS = {
     listHeading: 'Список діагнозів',
     emptyMsg: 'Діагнози відсутні',
     formHeading: 'Новий діагноз',
-    labelDiagText: 'Опис діагнозу',
-    diagPlaceholder: 'Введіть текст діагнозу...',
+    labelDiagText: 'Код МКХ-10 (діагноз)',
+    diagPlaceholder: 'Пошук за кодом або назвою рубрики...',
+    icdHint: 'Класифікація МКХ-10 (ВООЗ), рубрики українською — для медичної документації в Україні.',
+    icdLoadError: 'Не вдалося завантажити перелік МКХ-10. Перезавантажте сторінку.',
+    icdNoResults: 'Нічого не знайдено',
+    icdListAria: 'Перелік кодів МКХ-10',
+    clearIcdAria: 'Скинути вибір',
     labelSeverity: 'Тяжкість',
     sevMild: 'Легке',
     sevModerate: 'Середнє',
@@ -15,7 +20,7 @@ const TRANSLATIONS = {
     sevCritical: 'Критичне',
     submitBtn: 'Додати діагноз',
     submitBtnWait: 'Зачекайте...',
-    emptyTextError: 'Введіть опис діагнозу',
+    emptyTextError: 'Оберіть діагноз з переліку МКХ-10',
     loadError: 'Помилка завантаження',
     deleteDiagTitle: 'Видалити діагноз',
     deleteDiagText: 'Ви впевнені, що хочете видалити цей діагноз?',
@@ -32,8 +37,13 @@ const TRANSLATIONS = {
     listHeading: 'Diagnoses list',
     emptyMsg: 'No diagnoses',
     formHeading: 'New Diagnosis',
-    labelDiagText: 'Diagnosis description',
-    diagPlaceholder: 'Enter diagnosis text...',
+    labelDiagText: 'ICD-10 code (diagnosis)',
+    diagPlaceholder: 'Search by code or rubric title...',
+    icdHint: 'WHO ICD-10 structure with Ukrainian rubric titles (for clinical documentation in Ukraine).',
+    icdLoadError: 'Could not load the ICD-10 list. Reload the page.',
+    icdNoResults: 'No matches',
+    icdListAria: 'ICD-10 code list',
+    clearIcdAria: 'Clear selection',
     labelSeverity: 'Severity',
     sevMild: 'Mild',
     sevModerate: 'Moderate',
@@ -41,7 +51,7 @@ const TRANSLATIONS = {
     sevCritical: 'Critical',
     submitBtn: 'Add Diagnosis',
     submitBtnWait: 'Please wait...',
-    emptyTextError: 'Enter diagnosis description',
+    emptyTextError: 'Select a diagnosis from the ICD-10 list',
     loadError: 'Load error',
     deleteDiagTitle: 'Delete diagnosis',
     deleteDiagText: 'Are you sure you want to delete this diagnosis?',
@@ -52,6 +62,8 @@ const TRANSLATIONS = {
     deleteDiagFail: 'Could not delete diagnosis',
   },
 };
+
+const ICD_JSON_QUERY = 'v=1';
 
 if (!getToken() || getRole() !== 'hospital') {
   window.location.href = '../login/index.html';
@@ -74,7 +86,14 @@ const diagnosesList = document.getElementById('diagnosesList');
 const skeletonList  = document.getElementById('skeletonList');
 const emptyMsg      = document.getElementById('emptyMsg');
 const listErrorMsg  = document.getElementById('listErrorMsg');
-const diagnosisText = document.getElementById('diagnosisText');
+const icdPicker     = document.getElementById('icdPicker');
+const diagnosisSearch = document.getElementById('diagnosisSearch');
+const diagnosisSelected = document.getElementById('diagnosisSelected');
+const diagnosisSelectedCode = document.getElementById('diagnosisSelectedCode');
+const diagnosisSelectedTitle = document.getElementById('diagnosisSelectedTitle');
+const diagnosisClearBtn = document.getElementById('diagnosisClearBtn');
+const diagnosisDropdown = document.getElementById('diagnosisDropdown');
+const icdHint       = document.getElementById('icdHint');
 const severitySelect = document.getElementById('severitySelect');
 const submitBtn     = document.getElementById('submitBtn');
 const formMsg       = document.getElementById('formMsg');
@@ -89,13 +108,10 @@ let cachedDiagnoses = null;
 let dataLoaded      = false;
 let pendingDeleteDiagId = null;
 
-function fitDiagnosisTextarea() {
-  diagnosisText.style.height = 'auto';
-  diagnosisText.style.height = `${diagnosisText.scrollHeight}px`;
-}
-
-diagnosisText.addEventListener('input', fitDiagnosisTextarea);
-fitDiagnosisTextarea();
+let icdList = [];
+let icdLoadFailed = false;
+let selectedIcd = null;
+let filterRaf = null;
 
 function severityClass(s) {
   if (s === 'Легке')    return 'diag--mild';
@@ -154,6 +170,79 @@ function renderDiagnoses(data) {
   });
 }
 
+function filterIcd(q) {
+  const needle = q.trim().toLowerCase();
+  if (!needle) return icdList;
+  const out = [];
+  for (let i = 0; i < icdList.length; i++) {
+    const x = icdList[i];
+    if (x.code.toLowerCase().includes(needle) || x.title.toLowerCase().includes(needle)) {
+      out.push(x);
+    }
+  }
+  return out;
+}
+
+function renderDropdown(items) {
+  diagnosisDropdown.innerHTML = '';
+  if (!icdList.length) {
+    diagnosisDropdown.hidden = true;
+    return;
+  }
+  if (!items.length) {
+    const empty = document.createElement('div');
+    empty.className = 'icd-picker__empty';
+    empty.textContent = t('icdNoResults');
+    diagnosisDropdown.appendChild(empty);
+    diagnosisDropdown.hidden = false;
+    return;
+  }
+  for (const row of items) {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'icd-picker__item';
+    btn.setAttribute('role', 'option');
+    btn.innerHTML = `
+      <span class="icd-picker__item-code">${escapeHtml(row.code)}</span>
+      <span class="icd-picker__item-title">${escapeHtml(row.title)}</span>
+    `;
+    btn.addEventListener('click', () => {
+      selectedIcd = { code: row.code, title: row.title };
+      diagnosisSearch.value = '';
+      updateSelectedUi();
+      diagnosisDropdown.hidden = true;
+    });
+    diagnosisDropdown.appendChild(btn);
+  }
+  diagnosisDropdown.hidden = false;
+}
+
+function scheduleFilter() {
+  if (filterRaf != null) cancelAnimationFrame(filterRaf);
+  filterRaf = requestAnimationFrame(() => {
+    filterRaf = null;
+    renderDropdown(filterIcd(diagnosisSearch.value));
+  });
+}
+
+function updateSelectedUi() {
+  if (selectedIcd) {
+    diagnosisSelected.hidden = false;
+    diagnosisSelectedCode.textContent = selectedIcd.code;
+    diagnosisSelectedTitle.textContent = selectedIcd.title;
+  } else {
+    diagnosisSelected.hidden = true;
+    diagnosisSelectedCode.textContent = '';
+    diagnosisSelectedTitle.textContent = '';
+  }
+}
+
+function clearIcdSelection() {
+  selectedIcd = null;
+  updateSelectedUi();
+  diagnosisSearch.focus();
+}
+
 function applyLang() {
   document.documentElement.lang = lang;
   document.title = t('pageTitle');
@@ -165,7 +254,11 @@ function applyLang() {
   emptyMsg.textContent = t('emptyMsg');
   document.getElementById('formHeading').textContent = t('formHeading');
   document.getElementById('labelDiagText').textContent = t('labelDiagText');
-  diagnosisText.placeholder = t('diagPlaceholder');
+  diagnosisSearch.placeholder = t('diagPlaceholder');
+  icdHint.textContent = icdLoadFailed ? t('icdLoadError') : t('icdHint');
+  diagnosisDropdown.setAttribute('aria-label', t('icdListAria'));
+  diagnosisClearBtn.setAttribute('aria-label', t('clearIcdAria'));
+  diagnosisClearBtn.textContent = '×';
   document.getElementById('labelSeverity').textContent = t('labelSeverity');
 
   document.querySelector('#severitySelect option[value="Легке"]').textContent   = t('sevMild');
@@ -185,6 +278,9 @@ function applyLang() {
   });
 
   if (dataLoaded) renderDiagnoses(cachedDiagnoses);
+  if (icdList.length && document.activeElement === diagnosisSearch) {
+    scheduleFilter();
+  }
 }
 
 window.addEventListener('varta:langchange', (e) => {
@@ -197,6 +293,36 @@ document.querySelectorAll('.lang-switcher__btn').forEach((btn) => {
     vartaLang.set(btn.dataset.lang);
   });
 });
+
+diagnosisSearch.addEventListener('input', scheduleFilter);
+diagnosisSearch.addEventListener('focus', () => {
+  if (icdList.length) scheduleFilter();
+});
+diagnosisSearch.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') diagnosisDropdown.hidden = true;
+});
+
+diagnosisClearBtn.addEventListener('click', clearIcdSelection);
+
+document.addEventListener('click', (e) => {
+  if (!icdPicker.contains(e.target)) diagnosisDropdown.hidden = true;
+});
+
+async function loadIcdData() {
+  try {
+    const url = new URL(`icd10-ua.json?${ICD_JSON_QUERY}`, window.location.href);
+    const res = await fetch(url.href);
+    if (!res.ok) throw new Error(String(res.status));
+    const data = await res.json();
+    if (!Array.isArray(data)) throw new Error('shape');
+    icdList = data;
+    icdLoadFailed = false;
+  } catch {
+    icdList = [];
+    icdLoadFailed = true;
+  }
+  applyLang();
+}
 
 async function loadDiagnoses() {
   listErrorMsg.hidden = true;
@@ -231,11 +357,11 @@ function showFormMsg(text, type) {
 }
 
 async function submitDiagnosis() {
-  const text = diagnosisText.value.trim();
-  if (!text) {
+  if (!selectedIcd) {
     showFormMsg(t('emptyTextError'), 'error');
     return;
   }
+  const text = `${selectedIcd.code} — ${selectedIcd.title}`;
 
   submitBtn.disabled = true;
   submitBtn.textContent = t('submitBtnWait');
@@ -259,8 +385,8 @@ async function submitDiagnosis() {
       showFormMsg(data.detail || 'Помилка сервера', 'error');
     } else {
       showFormMsg(data.detail || 'Діагноз додано', 'success');
-      diagnosisText.value = '';
-      fitDiagnosisTextarea();
+      clearIcdSelection();
+      diagnosisSearch.value = '';
       await loadDiagnoses();
     }
   } catch (e) {
@@ -329,4 +455,4 @@ diagnosesList.addEventListener('click', (e) => {
 });
 
 applyLang();
-loadDiagnoses();
+Promise.all([loadIcdData(), loadDiagnoses()]);
