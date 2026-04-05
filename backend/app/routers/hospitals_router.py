@@ -190,3 +190,16 @@ def get_diagnoses(soldier_id: int, db: Session = Depends(get_db), current_user: 
         )
         for d in diagnoses
     ]
+
+@router.delete("/diagnosis/{diagnosis_id}", response_model=hospitals_schemas.DetailResponse, status_code=status.HTTP_200_OK)
+def delete_diagnosis(diagnosis_id: int, db: Session = Depends(get_db), current_user: dict = Depends(role_required(["hospital"]))):
+    hospital_id = current_user["user_id"]
+
+    diagnosis = db.query(models.Diagnosis).filter_by(id=diagnosis_id, hospital_id=hospital_id).first()
+    if not diagnosis:
+        raise HTTPException(status_code=404, detail="Діагноз не знайдено")
+
+    db.delete(diagnosis)
+    db.commit()
+
+    return hospitals_schemas.DetailResponse(detail="Діагноз видалено успішно")

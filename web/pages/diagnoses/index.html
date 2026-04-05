@@ -6,7 +6,7 @@
   <title>VARTA — Діагнози</title>
   <link rel="stylesheet" href="../../css/tokens.css?v=3" />
   <link rel="stylesheet" href="../../css/lang-switcher.css?v=2" />
-  <link rel="stylesheet" href="diagnoses.css?v=3" />
+  <link rel="stylesheet" href="diagnoses.css?v=4" />
 </head>
 <body>
 
@@ -69,8 +69,20 @@
     </div>
   </main>
 
+  <div class="modal-overlay" id="deleteDiagModal" hidden>
+    <div class="modal">
+      <h3 class="modal__title" id="deleteDiagModalTitle"></h3>
+      <p class="modal__text" id="deleteDiagModalText"></p>
+      <p class="modal__error" id="deleteDiagModalError" hidden></p>
+      <div class="modal__actions">
+        <button type="button" class="modal__btn modal__btn--cancel" id="deleteDiagCancelBtn"></button>
+        <button type="button" class="modal__btn modal__btn--danger" id="deleteDiagConfirmBtn"></button>
+      </div>
+    </div>
+  </div>
+
   <script src="../../js/lang.js?v=1"></script>
   <script src="../../js/api.js?v=2"></script>
-  <script src="diagnoses.js?v=3"></script>
+  <script src="diagnoses.js?v=4"></script>
 </body>
 </html>

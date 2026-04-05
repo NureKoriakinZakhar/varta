@@ -17,6 +17,13 @@ const TRANSLATIONS = {
     submitBtnWait: 'Зачекайте...',
     emptyTextError: 'Введіть опис діагнозу',
     loadError: 'Помилка завантаження',
+    deleteDiagTitle: 'Видалити діагноз',
+    deleteDiagText: 'Ви впевнені, що хочете видалити цей діагноз?',
+    deleteDiagCancel: 'Скасувати',
+    deleteDiagConfirm: 'Видалити',
+    deleteDiagConfirmWait: 'Зачекайте...',
+    deleteDiagAria: 'Видалити діагноз',
+    deleteDiagFail: 'Не вдалося видалити діагноз',
   },
   en: {
     titlePrefix: 'Diagnoses',
@@ -36,6 +43,13 @@ const TRANSLATIONS = {
     submitBtnWait: 'Please wait...',
     emptyTextError: 'Enter diagnosis description',
     loadError: 'Load error',
+    deleteDiagTitle: 'Delete diagnosis',
+    deleteDiagText: 'Are you sure you want to delete this diagnosis?',
+    deleteDiagCancel: 'Cancel',
+    deleteDiagConfirm: 'Delete',
+    deleteDiagConfirmWait: 'Please wait...',
+    deleteDiagAria: 'Delete diagnosis',
+    deleteDiagFail: 'Could not delete diagnosis',
   },
 };
 
@@ -64,9 +78,16 @@ const diagnosisText = document.getElementById('diagnosisText');
 const severitySelect = document.getElementById('severitySelect');
 const submitBtn     = document.getElementById('submitBtn');
 const formMsg       = document.getElementById('formMsg');
+const deleteDiagModal       = document.getElementById('deleteDiagModal');
+const deleteDiagModalTitle  = document.getElementById('deleteDiagModalTitle');
+const deleteDiagModalText   = document.getElementById('deleteDiagModalText');
+const deleteDiagModalError  = document.getElementById('deleteDiagModalError');
+const deleteDiagCancelBtn   = document.getElementById('deleteDiagCancelBtn');
+const deleteDiagConfirmBtn  = document.getElementById('deleteDiagConfirmBtn');
 
 let cachedDiagnoses = null;
 let dataLoaded      = false;
+let pendingDeleteDiagId = null;
 
 function fitDiagnosisTextarea() {
   diagnosisText.style.height = 'auto';
@@ -115,7 +136,17 @@ function renderDiagnoses(data) {
     el.innerHTML = `
       <div class="diag-item__header">
         <span class="diag-item__severity ${severityClass(d.severity)}">${severityLabel(d.severity)}</span>
-        <span class="diag-item__date">${formatDate(d.date_diagnosed)}</span>
+        <div class="diag-item__header-right">
+          <span class="diag-item__date">${formatDate(d.date_diagnosed)}</span>
+          <button type="button" class="diag-item__delete" data-action="delete-diag" data-diag-id="${d.id}" aria-label="${escapeHtml(t('deleteDiagAria'))}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polyline points="3 6 5 6 21 6"/>
+              <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
+              <line x1="10" y1="11" x2="10" y2="17"/>
+              <line x1="14" y1="11" x2="14" y2="17"/>
+            </svg>
+          </button>
+        </div>
       </div>
       <p class="diag-item__text">${escapeHtml(d.diagnosis_text)}</p>
     `;
@@ -143,6 +174,11 @@ function applyLang() {
   document.querySelector('#severitySelect option[value="Критичне"]').textContent = t('sevCritical');
 
   submitBtn.textContent = t('submitBtn');
+
+  deleteDiagModalTitle.textContent = t('deleteDiagTitle');
+  deleteDiagModalText.textContent = t('deleteDiagText');
+  deleteDiagCancelBtn.textContent = t('deleteDiagCancel');
+  deleteDiagConfirmBtn.textContent = t('deleteDiagConfirm');
 
   document.querySelectorAll('.lang-switcher__btn').forEach(btn => {
     btn.classList.toggle('active', btn.dataset.lang === lang);
@@ -236,6 +272,61 @@ async function submitDiagnosis() {
 }
 
 submitBtn.addEventListener('click', submitDiagnosis);
+
+function openDeleteDiagModal(id) {
+  pendingDeleteDiagId = id;
+  deleteDiagModalError.hidden = true;
+  deleteDiagModalError.textContent = '';
+  deleteDiagModal.hidden = false;
+}
+
+function closeDeleteDiagModal() {
+  deleteDiagModal.hidden = true;
+  pendingDeleteDiagId = null;
+  deleteDiagModalError.hidden = true;
+  deleteDiagModalError.textContent = '';
+}
+
+deleteDiagCancelBtn.addEventListener('click', closeDeleteDiagModal);
+
+deleteDiagConfirmBtn.addEventListener('click', async () => {
+  if (!pendingDeleteDiagId) return;
+
+  deleteDiagConfirmBtn.disabled = true;
+  deleteDiagConfirmBtn.textContent = t('deleteDiagConfirmWait');
+  deleteDiagModalError.hidden = true;
+
+  try {
+    const res = await apiFetch(`/hospitals/diagnosis/${pendingDeleteDiagId}`, { method: 'DELETE' });
+    if (!res) return;
+
+    const data = await res.json().catch(() => ({}));
+
+    if (!res.ok) {
+      const detail = typeof data.detail === 'string' ? data.detail : t('deleteDiagFail');
+      deleteDiagModalError.textContent = detail;
+      deleteDiagModalError.hidden = false;
+      return;
+    }
+
+    closeDeleteDiagModal();
+    await loadDiagnoses();
+  } catch (e) {
+    deleteDiagModalError.textContent = `${t('deleteDiagFail')}: ${e.message}`;
+    deleteDiagModalError.hidden = false;
+  } finally {
+    deleteDiagConfirmBtn.disabled = false;
+    deleteDiagConfirmBtn.textContent = t('deleteDiagConfirm');
+  }
+});
+
+diagnosesList.addEventListener('click', (e) => {
+  const btn = e.target.closest('[data-action="delete-diag"]');
+  if (!btn || !diagnosesList.contains(btn)) return;
+  const id = parseInt(btn.getAttribute('data-diag-id'), 10);
+  if (!id || id < 1) return;
+  openDeleteDiagModal(id);
+});
 
 applyLang();
 loadDiagnoses();
