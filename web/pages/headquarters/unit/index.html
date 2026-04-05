@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VARTA — Підрозділ</title>
+  <link rel="stylesheet" href="../../../css/tokens.css?v=3" />
+  <link rel="stylesheet" href="../../../css/lang-switcher.css?v=2" />
+  <link rel="stylesheet" href="../headquarters.css?v=15" />
+  <link rel="stylesheet" href="unit-page.css?v=3" />
+</head>
+<body>
+
+  <header class="topbar">
+    <div class="topbar__left">
+      <img class="topbar__logo" src="../../../assets/logo.webp" alt="VARTA" />
+    </div>
+    <div class="topbar__center">
+      <h1 class="topbar__title" id="topbarTitle">Генеральний штаб</h1>
+    </div>
+    <div class="topbar__right">
+      <div class="lang-switcher">
+        <button type="button" class="lang-switcher__btn" data-lang="uk">UA</button>
+        <button type="button" class="lang-switcher__btn" data-lang="en">EN</button>
+      </div>
+      <a class="btn-logout" id="backLink" href="../index.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <line x1="19" y1="12" x2="5" y2="12"/>
+          <polyline points="12 19 5 12 12 5"/>
+        </svg>
+        <span id="backText">До списку</span>
+      </a>
+    </div>
+  </header>
+
+  <main class="main main--unit-detail">
+    <p class="unit-page__err" id="pageErr" hidden></p>
+    <div class="unit-page__content" id="pageContent" hidden>
+      <h2 class="unit-page__title" id="unitTitle"></h2>
+      <div class="unit-detail__stats" id="unitDetailSummary"></div>
+      <div class="unit-detail__grid">
+        <section class="unit-detail__block" aria-labelledby="unitDetailSoldiersHeading">
+          <h3 class="unit-detail__block-title" id="unitDetailSoldiersHeading"></h3>
+          <div class="unit-detail__panel" id="unitDetailSoldiers"></div>
+        </section>
+        <section class="unit-detail__block" aria-labelledby="unitDetailPointsHeading">
+          <h3 class="unit-detail__block-title" id="unitDetailPointsHeading"></h3>
+          <div class="unit-detail__panel unit-detail__panel--compact" id="unitDetailPoints"></div>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <script src="../../../js/lang.js?v=1"></script>
+  <script src="../../../js/api.js?v=2"></script>
+  <script src="unit-detail.js?v=3"></script>
+</body>
+</html>

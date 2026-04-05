@@ -51,20 +51,6 @@ const TRANSLATIONS = {
     forceArmyUnits: 'Підрозділів',
     forceHospitals: 'Госпіталів',
     cardDetails: 'Деталі',
-    unitDetailClose: 'Закрити',
-    unitDetailSectionSoldiers: 'Військовослужбовці',
-    unitDetailSectionPoints: 'Точки евакуації',
-    unitDetailLoading: 'Завантаження…',
-    unitDetailEmptySoldiers: 'Немає записів',
-    unitDetailEmptyPoints: 'Немає точок',
-    soldierStatusGood: 'Норма',
-    soldierStatusWarning: 'Увага',
-    soldierStatusCritical: 'Критично',
-    soldierStatusHospital: 'На лікуванні',
-    soldierStatusNodata: 'Немає даних',
-    metricTempShort: 'Т.',
-    metricHrShort: 'ЧСС',
-    metricBatShort: 'Ак.',
   },
   en: {
     pageTitle: 'VARTA — General Staff',
@@ -118,20 +104,6 @@ const TRANSLATIONS = {
     forceArmyUnits: 'Units',
     forceHospitals: 'Hospitals',
     cardDetails: 'Details',
-    unitDetailClose: 'Close',
-    unitDetailSectionSoldiers: 'Personnel',
-    unitDetailSectionPoints: 'Evacuation points',
-    unitDetailLoading: 'Loading…',
-    unitDetailEmptySoldiers: 'No records',
-    unitDetailEmptyPoints: 'No points',
-    soldierStatusGood: 'Normal',
-    soldierStatusWarning: 'Warning',
-    soldierStatusCritical: 'Critical',
-    soldierStatusHospital: 'In treatment',
-    soldierStatusNodata: 'No data',
-    metricTempShort: 'T.',
-    metricHrShort: 'HR',
-    metricBatShort: 'Bat.',
   },
 };
 
@@ -186,17 +158,9 @@ const deleteCancelBtn = document.getElementById('deleteCancelBtn');
 const deleteConfirmBtn = document.getElementById('deleteConfirmBtn');
 
 const forcesOverviewTitleEl = document.getElementById('forcesOverviewTitle');
-const forcesOverviewGrid    = document.getElementById('forcesOverviewGrid');
+const forcesRowPersonnel    = document.getElementById('forcesRowPersonnel');
+const forcesRowStructure    = document.getElementById('forcesRowStructure');
 const forcesOverviewErr     = document.getElementById('forcesOverviewErr');
-const unitDetailModal       = document.getElementById('unitDetailModal');
-const unitDetailTitle       = document.getElementById('unitDetailTitle');
-const unitDetailSummary     = document.getElementById('unitDetailSummary');
-const unitDetailSoldiersHeading = document.getElementById('unitDetailSoldiersHeading');
-const unitDetailSoldiers    = document.getElementById('unitDetailSoldiers');
-const unitDetailPointsHeading = document.getElementById('unitDetailPointsHeading');
-const unitDetailPoints      = document.getElementById('unitDetailPoints');
-const unitDetailErr         = document.getElementById('unitDetailErr');
-const unitDetailCloseBtn    = document.getElementById('unitDetailCloseBtn');
 
 document.getElementById('logoutBtn').addEventListener('click', logout);
 
@@ -214,6 +178,7 @@ let forcesOverviewCache = null;
 const MIN_STR_LEN           = 6;
 const MIN_PASSWORD_LEN      = 6;
 const MIN_HOSPITAL_CAPACITY = 10;
+const STAT_PLACEHOLDER      = '—';
 
 function isValidCoordinates(s) {
   const segments = s.split(',');
@@ -285,159 +250,71 @@ function showListError(msg) {
   listError.hidden = false;
 }
 
+function appendForceStat(row, value, label, modifier) {
+  const wrap = document.createElement('div');
+  wrap.className = modifier ? `unit-detail__stat unit-detail__stat--${modifier}` : 'unit-detail__stat';
+  wrap.innerHTML = '<span class="unit-detail__stat-value"></span><span class="unit-detail__stat-label"></span>';
+  wrap.querySelector('.unit-detail__stat-value').textContent = value;
+  wrap.querySelector('.unit-detail__stat-label').textContent = label;
+  row.appendChild(wrap);
+}
+
+function renderForcesOverviewPlaceholder() {
+  forcesRowPersonnel.innerHTML = '';
+  forcesRowStructure.innerHTML = '';
+  appendForceStat(forcesRowPersonnel, STAT_PLACEHOLDER, t('forceTotalSoldiers'), 'total');
+  appendForceStat(
+    forcesRowPersonnel,
+    `${STAT_PLACEHOLDER} (${STAT_PLACEHOLDER}%)`,
+    t('forceInHospital'),
+    'hospital',
+  );
+  appendForceStat(
+    forcesRowPersonnel,
+    `${STAT_PLACEHOLDER} (${STAT_PLACEHOLDER}%)`,
+    t('forceNotInHospital'),
+    'field',
+  );
+  appendForceStat(forcesRowStructure, STAT_PLACEHOLDER, t('forceArmyUnits'), 'units');
+  appendForceStat(forcesRowStructure, STAT_PLACEHOLDER, t('forceHospitals'), 'hospitals');
+}
+
 function renderForcesOverview(data) {
   if (!data) return;
-  forcesOverviewGrid.innerHTML = '';
-  const cells = [
-    { value: String(data.total_soldiers), label: t('forceTotalSoldiers') },
-    {
-      value: `${data.soldiers_in_hospital} (${data.soldiers_in_hospital_percent}%)`,
-      label: t('forceInHospital'),
-    },
-    {
-      value: `${data.soldiers_not_in_hospital} (${data.soldiers_not_in_hospital_percent}%)`,
-      label: t('forceNotInHospital'),
-    },
-    { value: String(data.army_units_count), label: t('forceArmyUnits') },
-    { value: String(data.hospitals_count), label: t('forceHospitals') },
-  ];
-  for (const c of cells) {
-    const wrap = document.createElement('div');
-    wrap.className = 'forces-stat';
-    wrap.innerHTML = '<span class="forces-stat__value"></span><span class="forces-stat__label"></span>';
-    wrap.querySelector('.forces-stat__value').textContent = c.value;
-    wrap.querySelector('.forces-stat__label').textContent = c.label;
-    forcesOverviewGrid.appendChild(wrap);
-  }
+  forcesRowPersonnel.innerHTML = '';
+  forcesRowStructure.innerHTML = '';
+  appendForceStat(forcesRowPersonnel, String(data.total_soldiers), t('forceTotalSoldiers'), 'total');
+  appendForceStat(
+    forcesRowPersonnel,
+    `${data.soldiers_in_hospital} (${data.soldiers_in_hospital_percent}%)`,
+    t('forceInHospital'),
+    'hospital',
+  );
+  appendForceStat(
+    forcesRowPersonnel,
+    `${data.soldiers_not_in_hospital} (${data.soldiers_not_in_hospital_percent}%)`,
+    t('forceNotInHospital'),
+    'field',
+  );
+  appendForceStat(forcesRowStructure, String(data.army_units_count), t('forceArmyUnits'), 'units');
+  appendForceStat(forcesRowStructure, String(data.hospitals_count), t('forceHospitals'), 'hospitals');
 }
 
 async function loadForcesOverview() {
   forcesOverviewErr.hidden = true;
+  renderForcesOverviewPlaceholder();
   const res = await apiFetch('/headquarters/forces/overview');
   if (!res) return;
   if (!res.ok) {
     forcesOverviewErr.textContent = await readError(res);
     forcesOverviewErr.hidden = false;
-    forcesOverviewGrid.innerHTML = '';
+    forcesRowPersonnel.innerHTML = '';
+    forcesRowStructure.innerHTML = '';
     forcesOverviewCache = null;
     return;
   }
   forcesOverviewCache = await res.json();
   renderForcesOverview(forcesOverviewCache);
-}
-
-function soldierStatusLabel(status) {
-  if (status === 'Good') return t('soldierStatusGood');
-  if (status === 'Warning') return t('soldierStatusWarning');
-  if (status === 'Critical') return t('soldierStatusCritical');
-  if (status === 'На лікуванні') return t('soldierStatusHospital');
-  return t('soldierStatusNodata');
-}
-
-function renderUnitDetailSummary(s) {
-  unitDetailSummary.innerHTML = '';
-  const items = [
-    { v: String(s.total_soldiers), l: t('forceTotalSoldiers') },
-    { v: `${s.soldiers_in_hospital} (${s.soldiers_in_hospital_percent}%)`, l: t('forceInHospital') },
-    { v: `${s.soldiers_not_in_hospital} (${s.soldiers_not_in_hospital_percent}%)`, l: t('forceNotInHospital') },
-  ];
-  for (const it of items) {
-    const el = document.createElement('div');
-    el.className = 'unit-detail__summary-item';
-    const strong = document.createElement('strong');
-    strong.textContent = it.v;
-    el.appendChild(strong);
-    el.appendChild(document.createTextNode(` ${it.l}`));
-    unitDetailSummary.appendChild(el);
-  }
-}
-
-function renderUnitDetailSoldiers(list) {
-  unitDetailSoldiers.innerHTML = '';
-  if (!list.length) {
-    const row = document.createElement('div');
-    row.className = 'unit-detail__row';
-    row.textContent = t('unitDetailEmptySoldiers');
-    unitDetailSoldiers.appendChild(row);
-    return;
-  }
-  for (const s of list) {
-    const row = document.createElement('div');
-    row.className = 'unit-detail__row';
-    let metricsLine = '';
-    if (s.metrics) {
-      const m = s.metrics;
-      metricsLine = ` · ${t('metricTempShort')} ${Number(m.temperature).toFixed(1)}°C · ${t('metricHrShort')} ${m.heart_rate} · ${t('metricBatShort')} ${m.battery_percent}%`;
-    }
-    row.innerHTML = `
-      <div class="unit-detail__row-name"></div>
-      <div class="unit-detail__row-meta"></div>
-    `;
-    row.querySelector('.unit-detail__row-name').textContent = s.full_name;
-    const meta = `${s.rank} · ${s.birth_date} · IoT: ${s.iot_serial} · ${soldierStatusLabel(s.status)}${s.coordinates ? ` · GPS: ${s.coordinates}` : ''}${metricsLine}`;
-    row.querySelector('.unit-detail__row-meta').textContent = meta;
-    unitDetailSoldiers.appendChild(row);
-  }
-}
-
-function renderUnitDetailPoints(list) {
-  unitDetailPoints.innerHTML = '';
-  if (!list.length) {
-    const row = document.createElement('div');
-    row.className = 'unit-detail__row';
-    row.textContent = t('unitDetailEmptyPoints');
-    unitDetailPoints.appendChild(row);
-    return;
-  }
-  for (const p of list) {
-    const row = document.createElement('div');
-    row.className = 'unit-detail__row';
-    const desc = p.description ? ` — ${p.description}` : '';
-    row.innerHTML = `<div class="unit-detail__row-name"></div><div class="unit-detail__row-meta"></div>`;
-    row.querySelector('.unit-detail__row-name').textContent = p.name;
-    row.querySelector('.unit-detail__row-meta').textContent = `${p.coordinates}${desc}`;
-    unitDetailPoints.appendChild(row);
-  }
-}
-
-async function openUnitDetail(u) {
-  unitDetailModal.hidden = false;
-  unitDetailTitle.textContent = u.name;
-  unitDetailErr.hidden = true;
-  unitDetailSummary.innerHTML = '';
-  unitDetailSoldiers.innerHTML = `<div class="unit-detail__row">${t('unitDetailLoading')}</div>`;
-  unitDetailPoints.innerHTML = `<div class="unit-detail__row">${t('unitDetailLoading')}</div>`;
-
-  try {
-    const r1 = await apiFetch(`/headquarters/army_units/${u.id}/summary`);
-    if (!r1) return;
-    const r2 = await apiFetch(`/headquarters/army_units/${u.id}/soldiers`);
-    if (!r2) return;
-    const r3 = await apiFetch(`/headquarters/army_units/${u.id}/evacuation_points`);
-    if (!r3) return;
-
-    if (!r1.ok) throw new Error(await readError(r1));
-    if (!r2.ok) throw new Error(await readError(r2));
-    if (!r3.ok) throw new Error(await readError(r3));
-
-    const summary = await r1.json();
-    const soldiers = await r2.json();
-    const points = await r3.json();
-
-    renderUnitDetailSummary(summary);
-    renderUnitDetailSoldiers(Array.isArray(soldiers) ? soldiers : []);
-    renderUnitDetailPoints(Array.isArray(points) ? points : []);
-  } catch (e) {
-    unitDetailErr.textContent = e.message || t('errorRequest');
-    unitDetailErr.hidden = false;
-    unitDetailSummary.innerHTML = '';
-    unitDetailSoldiers.innerHTML = '';
-    unitDetailPoints.innerHTML = '';
-  }
-}
-
-function closeUnitDetailModal() {
-  unitDetailModal.hidden = true;
 }
 
 function renderUnitCard(u) {
@@ -450,11 +327,7 @@ function renderUnitCard(u) {
       <h2 class="entity-card__title"></h2>
       <p class="entity-card__meta"></p>
     </div>
-    <div class="entity-card__actions">
-      <button type="button" class="entity-card__btn entity-card__btn--details" data-action="details">${t('cardDetails')}</button>
-      <button type="button" class="entity-card__btn entity-card__btn--edit" data-action="edit">${t('cardEdit')}</button>
-      <button type="button" class="entity-card__btn entity-card__btn--delete" data-action="delete">${t('cardDelete')}</button>
-    </div>
+    <div class="entity-card__actions"></div>
   `;
   card.querySelector('.entity-card__title').textContent = u.name;
   const metaEl = card.querySelector('.entity-card__meta');
@@ -462,11 +335,30 @@ function renderUnitCard(u) {
   metaEl.append(document.createElement('br'));
   metaEl.append(document.createTextNode(u.coordinates));
 
-  card.querySelector('[data-action="details"]').addEventListener('click', () => openUnitDetail(u));
-  card.querySelector('[data-action="edit"]').addEventListener('click', () => openFormEdit('unit', u));
-  card.querySelector('[data-action="delete"]').addEventListener('click', () =>
+  const actions = card.querySelector('.entity-card__actions');
+  const detailsLink = document.createElement('a');
+  detailsLink.className = 'entity-card__btn entity-card__btn--details';
+  detailsLink.href = `unit/index.html?id=${encodeURIComponent(u.id)}`;
+  detailsLink.textContent = t('cardDetails');
+  actions.appendChild(detailsLink);
+
+  const editBtn = document.createElement('button');
+  editBtn.type = 'button';
+  editBtn.className = 'entity-card__btn entity-card__btn--edit';
+  editBtn.dataset.action = 'edit';
+  editBtn.textContent = t('cardEdit');
+  editBtn.addEventListener('click', () => openFormEdit('unit', u));
+  actions.appendChild(editBtn);
+
+  const deleteBtn = document.createElement('button');
+  deleteBtn.type = 'button';
+  deleteBtn.className = 'entity-card__btn entity-card__btn--delete';
+  deleteBtn.dataset.action = 'delete';
+  deleteBtn.textContent = t('cardDelete');
+  deleteBtn.addEventListener('click', () =>
     openDeleteModal({ kind: 'unit', id: u.id, name: u.name }),
   );
+  actions.appendChild(deleteBtn);
   return card;
 }
 
@@ -858,11 +750,9 @@ function applyLang() {
   openCoordMapBtn.setAttribute('aria-label', t('pickOnMap'));
 
   forcesOverviewTitleEl.textContent = t('forceOverviewTitle');
-  unitDetailCloseBtn.textContent = t('unitDetailClose');
-  unitDetailSoldiersHeading.textContent = t('unitDetailSectionSoldiers');
-  unitDetailPointsHeading.textContent = t('unitDetailSectionPoints');
 
   if (forcesOverviewCache) renderForcesOverview(forcesOverviewCache);
+  else renderForcesOverviewPlaceholder();
 
   document.querySelectorAll('.lang-switcher__btn').forEach(btn => {
     btn.classList.toggle('active', btn.dataset.lang === lang);
@@ -885,8 +775,6 @@ document.querySelectorAll('.lang-switcher__btn').forEach((btn) => {
     vartaLang.set(btn.dataset.lang);
   });
 });
-
-unitDetailCloseBtn.addEventListener('click', closeUnitDetailModal);
 
 applyLang();
 consumeMapReturn();
