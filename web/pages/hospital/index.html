@@ -6,7 +6,7 @@
   <title>VARTA — Пацієнти</title>
   <link rel="stylesheet" href="../../css/tokens.css?v=3" />
   <link rel="stylesheet" href="../../css/lang-switcher.css?v=2" />
-  <link rel="stylesheet" href="hospital.css?v=10" />
+  <link rel="stylesheet" href="hospital.css?v=13" />
 </head>
 <body>
 
@@ -106,18 +106,56 @@
   </main>
 
   <div class="modal-overlay" id="dischargeModal" hidden>
-    <div class="modal">
+    <div class="modal modal--discharge">
       <h3 class="modal__title" id="dischargeModalTitle">Виписати пацієнта</h3>
-      <p class="modal__text"><span id="dischargeModalTextPrefix">Ви впевнені, що хочете виписати</span> <strong id="dischargeModalName"></strong>?</p>
+      <p class="modal__text modal__text--discharge"><span id="dischargeModalTextPrefix">Виписка для</span> <strong id="dischargeModalName"></strong></p>
+      <form class="discharge-form" id="dischargeForm" novalidate>
+        <div class="discharge-form__field">
+          <label class="discharge-form__label" for="dischargeDate" id="labelDischargeDate">Дата виписки</label>
+          <input class="discharge-form__input" type="date" id="dischargeDate" name="dischargeDate" required />
+        </div>
+        <div class="discharge-form__field">
+          <label class="discharge-form__label" for="dischargeCourse" id="labelCourse">Перебіг</label>
+          <textarea class="discharge-form__textarea" id="dischargeCourse" name="course" rows="4" required></textarea>
+        </div>
+        <div class="discharge-form__field">
+          <label class="discharge-form__label" for="dischargeTreatment" id="labelTreatment">Лікування</label>
+          <textarea class="discharge-form__textarea" id="dischargeTreatment" name="treatment" rows="4" required></textarea>
+        </div>
+        <div class="discharge-form__field">
+          <label class="discharge-form__label" for="dischargeRecommendations" id="labelRecommendations">Рекомендації</label>
+          <textarea class="discharge-form__textarea" id="dischargeRecommendations" name="recommendations" rows="4" required></textarea>
+        </div>
+        <div class="discharge-form__field">
+          <label class="discharge-form__label" for="dischargeConclusion" id="labelConclusion">Висновок</label>
+          <textarea class="discharge-form__textarea" id="dischargeConclusion" name="conclusion" rows="4" required></textarea>
+        </div>
+        <p class="discharge-form__error" id="dischargeFormError" hidden></p>
+        <div class="modal__actions modal__actions--discharge">
+          <button type="button" class="modal__btn modal__btn--cancel" id="dischargeCancelBtn">Скасувати</button>
+          <button type="submit" class="modal__btn modal__btn--danger" id="dischargeConfirmBtn">Виписати</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="pdfModal" hidden>
+    <div class="modal">
+      <h3 class="modal__title" id="pdfModalTitle">Виписку оформлено</h3>
+      <p class="modal__text" id="pdfModalText">Завантажте PDF з даними виписки.</p>
       <div class="modal__actions">
-        <button class="modal__btn modal__btn--cancel" id="dischargeCancelBtn">Скасувати</button>
-        <button class="modal__btn modal__btn--danger" id="dischargeConfirmBtn">Виписати</button>
+        <button type="button" class="modal__btn modal__btn--cancel" id="pdfModalCloseBtn">Закрити</button>
+        <button type="button" class="modal__btn modal__btn--primary" id="pdfDownloadBtn">Завантажити PDF</button>
       </div>
     </div>
   </div>
 
+  <div class="pdf-render-root" id="pdfRenderRoot" aria-hidden="true"></div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" crossorigin="anonymous"></script>
   <script src="../../js/lang.js?v=1"></script>
   <script src="../../js/api.js?v=2"></script>
-  <script src="hospital.js?v=13"></script>
+  <script src="hospital.js?v=15"></script>
 </body>
 </html>

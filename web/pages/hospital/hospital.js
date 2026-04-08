@@ -20,10 +20,37 @@ const TRANSLATIONS = {
     admitBtnWait: 'Зачекайте...',
     admitIdError: 'Введіть коректний ID військовослужбовця',
     dischargeModalTitle: 'Виписати пацієнта',
-    dischargeTextPrefix: 'Ви впевнені, що хочете виписати',
+    dischargeTextPrefix: 'Виписка для',
     dischargeCancel: 'Скасувати',
     dischargeConfirm: 'Виписати',
     dischargeConfirmWait: 'Зачекайте...',
+    labelDischargeDate: 'Дата виписки',
+    labelCourse: 'Перебіг',
+    labelTreatment: 'Лікування',
+    labelRecommendations: 'Рекомендації',
+    labelConclusion: 'Висновок',
+    dischargeFillAll: 'Заповніть усі поля форми.',
+    dischargeErrorGeneric: 'Не вдалося виписати. Спробуйте ще раз.',
+    pdfModalTitle: 'Виписку оформлено',
+    pdfModalText: 'Завантажте PDF з даними виписки.',
+    pdfDownload: 'Завантажити PDF',
+    pdfModalClose: 'Закрити',
+    pdfDocTitle: 'Виписка з госпіталю',
+    pdfBrand: 'VARTA',
+    pdfDocSubtitle: 'Офіційна медична виписка',
+    pdfPatientBlockTitle: 'Облікові дані військовослужбовця',
+    pdfFooterNote: 'Документ сформовано електронно в інформаційній системі VARTA',
+    pdfLabelFullName: 'ПІБ',
+    pdfLabelRank: 'Звання',
+    pdfLabelBirth: 'Дата народження',
+    pdfLabelIot: 'Пристрій IoT',
+    pdfLabelDischargeDate: 'Дата виписки',
+    pdfLabelCourse: 'Перебіг',
+    pdfLabelTreatment: 'Лікування',
+    pdfLabelRecommendations: 'Рекомендації',
+    pdfLabelConclusion: 'Висновок',
+    pdfErrorLibs: 'Не вдалося завантажити бібліотеки PDF. Перевірте з’єднання з інтернетом.',
+    pdfErrorCreate: 'Помилка створення PDF.',
     loadError: 'Помилка завантаження:',
     statusGood: 'Норма',
     statusWarning: 'Увага',
@@ -58,10 +85,37 @@ const TRANSLATIONS = {
     admitBtnWait: 'Please wait...',
     admitIdError: 'Enter a valid soldier ID',
     dischargeModalTitle: 'Discharge Patient',
-    dischargeTextPrefix: 'Are you sure you want to discharge',
+    dischargeTextPrefix: 'Discharge for',
     dischargeCancel: 'Cancel',
     dischargeConfirm: 'Discharge',
     dischargeConfirmWait: 'Please wait...',
+    labelDischargeDate: 'Discharge date',
+    labelCourse: 'Clinical course',
+    labelTreatment: 'Treatment',
+    labelRecommendations: 'Recommendations',
+    labelConclusion: 'Conclusion',
+    dischargeFillAll: 'Please fill in all fields.',
+    dischargeErrorGeneric: 'Discharge failed. Please try again.',
+    pdfModalTitle: 'Discharge completed',
+    pdfModalText: 'Download the PDF with discharge details.',
+    pdfDownload: 'Download PDF',
+    pdfModalClose: 'Close',
+    pdfDocTitle: 'Hospital discharge summary',
+    pdfBrand: 'VARTA',
+    pdfDocSubtitle: 'Official medical discharge summary',
+    pdfPatientBlockTitle: 'Service member identification',
+    pdfFooterNote: 'Document generated electronically in the VARTA information system',
+    pdfLabelFullName: 'Full name',
+    pdfLabelRank: 'Rank',
+    pdfLabelBirth: 'Date of birth',
+    pdfLabelIot: 'IoT device',
+    pdfLabelDischargeDate: 'Discharge date',
+    pdfLabelCourse: 'Clinical course',
+    pdfLabelTreatment: 'Treatment',
+    pdfLabelRecommendations: 'Recommendations',
+    pdfLabelConclusion: 'Conclusion',
+    pdfErrorLibs: 'PDF libraries failed to load. Check your internet connection.',
+    pdfErrorCreate: 'Failed to create PDF.',
     loadError: 'Load error:',
     statusGood: 'Normal',
     statusWarning: 'Warning',
@@ -98,10 +152,23 @@ const statCritical       = document.getElementById('statCritical');
 const admitSoldierId     = document.getElementById('admitSoldierId');
 const admitBtn           = document.getElementById('admitBtn');
 const admitMsg           = document.getElementById('admitMsg');
-const dischargeModal     = document.getElementById('dischargeModal');
-const dischargeModalName = document.getElementById('dischargeModalName');
-const dischargeCancelBtn = document.getElementById('dischargeCancelBtn');
-const dischargeConfirmBtn = document.getElementById('dischargeConfirmBtn');
+const dischargeModal       = document.getElementById('dischargeModal');
+const dischargeModalName   = document.getElementById('dischargeModalName');
+const dischargeCancelBtn   = document.getElementById('dischargeCancelBtn');
+const dischargeConfirmBtn  = document.getElementById('dischargeConfirmBtn');
+const dischargeForm        = document.getElementById('dischargeForm');
+const dischargeDate        = document.getElementById('dischargeDate');
+const dischargeCourse      = document.getElementById('dischargeCourse');
+const dischargeTreatment   = document.getElementById('dischargeTreatment');
+const dischargeRecommendations = document.getElementById('dischargeRecommendations');
+const dischargeConclusion  = document.getElementById('dischargeConclusion');
+const dischargeFormError   = document.getElementById('dischargeFormError');
+const pdfModal             = document.getElementById('pdfModal');
+const pdfModalTitle        = document.getElementById('pdfModalTitle');
+const pdfModalText         = document.getElementById('pdfModalText');
+const pdfDownloadBtn       = document.getElementById('pdfDownloadBtn');
+const pdfModalCloseBtn     = document.getElementById('pdfModalCloseBtn');
+const pdfRenderRoot        = document.getElementById('pdfRenderRoot');
 
 document.getElementById('logoutBtn').addEventListener('click', logout);
 
@@ -247,6 +314,15 @@ function applyLang() {
   document.getElementById('dischargeModalTextPrefix').textContent = t('dischargeTextPrefix');
   dischargeCancelBtn.textContent = t('dischargeCancel');
   dischargeConfirmBtn.textContent = t('dischargeConfirm');
+  document.getElementById('labelDischargeDate').textContent = t('labelDischargeDate');
+  document.getElementById('labelCourse').textContent = t('labelCourse');
+  document.getElementById('labelTreatment').textContent = t('labelTreatment');
+  document.getElementById('labelRecommendations').textContent = t('labelRecommendations');
+  document.getElementById('labelConclusion').textContent = t('labelConclusion');
+  pdfModalTitle.textContent = t('pdfModalTitle');
+  pdfModalText.textContent = t('pdfModalText');
+  pdfDownloadBtn.textContent = t('pdfDownload');
+  pdfModalCloseBtn.textContent = t('pdfModalClose');
 
   document.querySelectorAll('.lang-switcher__btn').forEach(btn => {
     btn.classList.toggle('active', btn.dataset.lang === lang);
@@ -349,59 +425,276 @@ admitSoldierId.addEventListener('keydown', e => {
   if (e.key === 'Enter') submitAdmit();
 });
 
-let pendingDischargeId = null;
+let pendingDischargePatient = null;
+let pendingPdfPayload = null;
 
-function openDischargeModal(id, name) {
-  pendingDischargeId = id;
-  dischargeModalName.textContent = name;
+function localDateYmd() {
+  const d = new Date();
+  const pad = (n) => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+}
+
+function formatPdfDischargeDate(ymd) {
+  if (!ymd || !/^\d{4}-\d{2}-\d{2}$/.test(ymd)) return ymd;
+  const p = ymd.split('-').map(Number);
+  const dt = new Date(p[0], p[1] - 1, p[2]);
+  return dt.toLocaleDateString(lang === 'uk' ? 'uk-UA' : 'en-GB', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  });
+}
+
+function resetDischargeForm() {
+  dischargeDate.value = localDateYmd();
+  dischargeCourse.value = '';
+  dischargeTreatment.value = '';
+  dischargeRecommendations.value = '';
+  dischargeConclusion.value = '';
+  dischargeFormError.hidden = true;
+  dischargeFormError.textContent = '';
+}
+
+function openDischargeModal(soldierId) {
+  const p = allPatients.find((x) => String(x.soldier_id) === String(soldierId));
+  if (!p) return;
+  pendingDischargePatient = p;
+  dischargeModalName.textContent = p.full_name;
+  resetDischargeForm();
   dischargeModal.hidden = false;
 }
 
 function closeDischargeModal() {
   dischargeModal.hidden = true;
-  pendingDischargeId = null;
+  pendingDischargePatient = null;
+  dischargeConfirmBtn.disabled = false;
+  dischargeConfirmBtn.textContent = t('dischargeConfirm');
 }
 
-dischargeCancelBtn.addEventListener('click', closeDischargeModal);
+function closePdfModal() {
+  pdfModal.hidden = true;
+  pendingPdfPayload = null;
+  pdfRenderRoot.replaceChildren();
+  pdfModalText.textContent = t('pdfModalText');
+  pdfDownloadBtn.disabled = false;
+}
 
-dischargeConfirmBtn.addEventListener('click', async () => {
-  if (!pendingDischargeId) return;
+function buildPdfDom(payload) {
+  pdfRenderRoot.replaceChildren();
+  const doc = document.createElement('div');
+  doc.className = 'pdf-doc';
 
+  const header = document.createElement('header');
+  header.className = 'pdf-doc-header';
+  const brand = document.createElement('p');
+  brand.className = 'pdf-doc-brand';
+  brand.textContent = t('pdfBrand');
+  const title = document.createElement('h1');
+  title.className = 'pdf-doc-title';
+  title.textContent = t('pdfDocTitle');
+  const sub = document.createElement('p');
+  sub.className = 'pdf-doc-subtitle';
+  sub.textContent = t('pdfDocSubtitle');
+  header.append(brand, title, sub);
+  doc.appendChild(header);
+
+  const blockTitle = document.createElement('p');
+  blockTitle.className = 'pdf-block-title';
+  blockTitle.textContent = t('pdfPatientBlockTitle');
+  doc.appendChild(blockTitle);
+
+  const grid = document.createElement('div');
+  grid.className = 'pdf-patient-grid';
+
+  function labelText(key) {
+    return t(key).replace(/:\s*$/, '');
+  }
+
+  function addPatientRow(labelKey, value) {
+    const row = document.createElement('div');
+    row.className = 'pdf-patient-row';
+    const lab = document.createElement('div');
+    lab.className = 'pdf-patient-label';
+    lab.textContent = labelText(labelKey);
+    const val = document.createElement('div');
+    val.className = 'pdf-patient-val';
+    val.textContent = value;
+    row.append(lab, val);
+    grid.appendChild(row);
+  }
+
+  addPatientRow('pdfLabelFullName', payload.full_name);
+  addPatientRow('pdfLabelRank', payload.rank);
+  addPatientRow('pdfLabelBirth', payload.birth_date);
+  addPatientRow('pdfLabelIot', payload.iot_serial);
+  addPatientRow('pdfLabelDischargeDate', formatPdfDischargeDate(payload.discharge_date));
+  doc.appendChild(grid);
+
+  function addSection(titleKey, text) {
+    const sec = document.createElement('div');
+    sec.className = 'pdf-section';
+    const head = document.createElement('div');
+    head.className = 'pdf-section__title';
+    head.textContent = t(titleKey);
+    const body = document.createElement('div');
+    body.className = 'pdf-section__body';
+    body.textContent = text;
+    sec.append(head, body);
+    doc.appendChild(sec);
+  }
+
+  addSection('pdfLabelCourse', payload.course);
+  addSection('pdfLabelTreatment', payload.treatment);
+  addSection('pdfLabelRecommendations', payload.recommendations);
+  addSection('pdfLabelConclusion', payload.conclusion);
+
+  const foot = document.createElement('div');
+  foot.className = 'pdf-footer';
+  foot.textContent = t('pdfFooterNote');
+  doc.appendChild(foot);
+
+  pdfRenderRoot.appendChild(doc);
+}
+
+async function runPdfDownload() {
+  if (!pendingPdfPayload || !window.jspdf || !window.html2canvas) return;
+  const { jsPDF } = window.jspdf;
+  buildPdfDom(pendingPdfPayload);
+  await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+  const canvas = await window.html2canvas(pdfRenderRoot, {
+    scale: 2,
+    useCORS: true,
+    backgroundColor: '#ffffff',
+    logging: false,
+  });
+  const pdf = new jsPDF({ orientation: 'p', unit: 'mm', format: 'a4' });
+  const imgData = canvas.toDataURL('image/png');
+  const pageWidth = pdf.internal.pageSize.getWidth();
+  const pageHeight = pdf.internal.pageSize.getHeight();
+  const imgWidth = pageWidth;
+  const imgHeight = (canvas.height * imgWidth) / canvas.width;
+  let heightLeft = imgHeight;
+  let position = 0;
+  pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+  heightLeft -= pageHeight;
+  while (heightLeft > 0) {
+    position = heightLeft - imgHeight;
+    pdf.addPage();
+    pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+    heightLeft -= pageHeight;
+  }
+  let safe = pendingPdfPayload.full_name.trim().replace(/[\\/:*?"<>|]+/g, '_').replace(/\s+/g, '_');
+  if (!safe) safe = 'patient';
+  safe = safe.slice(0, 60);
+  pdf.save(`vypyska_${safe}_${pendingPdfPayload.discharge_date}.pdf`);
+}
+
+dischargeCancelBtn.addEventListener('click', () => {
+  closeDischargeModal();
+});
+
+dischargeForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  if (!pendingDischargePatient) return;
+
+  const dateVal = dischargeDate.value;
+  const course = dischargeCourse.value.trim();
+  const treatment = dischargeTreatment.value.trim();
+  const recommendations = dischargeRecommendations.value.trim();
+  const conclusion = dischargeConclusion.value.trim();
+
+  if (!dateVal || !course || !treatment || !recommendations || !conclusion) {
+    dischargeFormError.textContent = t('dischargeFillAll');
+    dischargeFormError.hidden = false;
+    return;
+  }
+
+  dischargeFormError.hidden = true;
   dischargeConfirmBtn.disabled = true;
   dischargeConfirmBtn.textContent = t('dischargeConfirmWait');
+
+  const p = pendingDischargePatient;
 
   try {
     const res = await apiFetch('/hospitals/discharge_patient', {
       method: 'POST',
-      body: JSON.stringify({ soldier_id: parseInt(pendingDischargeId, 10) }),
+      body: JSON.stringify({ soldier_id: parseInt(String(p.soldier_id), 10) }),
     });
 
-    if (!res) return;
-
-    closeDischargeModal();
-
-    if (res.ok) {
-      await loadPatients();
+    if (!res) {
+      dischargeConfirmBtn.disabled = false;
+      dischargeConfirmBtn.textContent = t('dischargeConfirm');
+      return;
     }
-  } catch (e) {
-  } finally {
+
+    const data = await res.json().catch(() => ({}));
+
+    if (!res.ok) {
+      dischargeFormError.textContent = data.detail || t('dischargeErrorGeneric');
+      dischargeFormError.hidden = false;
+      dischargeConfirmBtn.disabled = false;
+      dischargeConfirmBtn.textContent = t('dischargeConfirm');
+      return;
+    }
+
+    pendingPdfPayload = {
+      full_name: p.full_name,
+      rank: p.rank,
+      birth_date: p.birth_date,
+      iot_serial: p.iot_serial,
+      discharge_date: dateVal,
+      course,
+      treatment,
+      recommendations,
+      conclusion,
+    };
+
+    dischargeModal.hidden = true;
+    pendingDischargePatient = null;
+    dischargeConfirmBtn.disabled = false;
+    dischargeConfirmBtn.textContent = t('dischargeConfirm');
+    resetDischargeForm();
+
+    await loadPatients();
+
+    pdfModal.hidden = false;
+  } catch (err) {
+    dischargeFormError.textContent = t('dischargeErrorGeneric');
+    dischargeFormError.hidden = false;
     dischargeConfirmBtn.disabled = false;
     dischargeConfirmBtn.textContent = t('dischargeConfirm');
   }
 });
 
-patientsList.addEventListener('click', e => {
+pdfModalCloseBtn.addEventListener('click', closePdfModal);
+
+pdfDownloadBtn.addEventListener('click', async () => {
+  if (!window.jspdf || !window.html2canvas) {
+    pdfModalText.textContent = t('pdfErrorLibs');
+    return;
+  }
+  pdfDownloadBtn.disabled = true;
+  try {
+    await runPdfDownload();
+  } catch (err) {
+    pdfModalText.textContent = t('pdfErrorCreate');
+  } finally {
+    pdfDownloadBtn.disabled = false;
+  }
+});
+
+patientsList.addEventListener('click', (e) => {
   const btn = e.target.closest('[data-action]');
   if (!btn || !patientsList.contains(btn)) return;
   const card = btn.closest('.patient-card');
   if (!card || !patientsList.contains(card)) return;
-  const id   = card.dataset.id;
+  const id = card.dataset.id;
   const name = card.dataset.name;
 
   if (btn.dataset.action === 'diagnoses') {
     window.location.href = `../diagnoses/index.html?soldier_id=${encodeURIComponent(id)}&name=${encodeURIComponent(name)}`;
   }
-  if (btn.dataset.action === 'discharge') openDischargeModal(id, name);
+  if (btn.dataset.action === 'discharge') openDischargeModal(id);
 });
 
 applyLang();
