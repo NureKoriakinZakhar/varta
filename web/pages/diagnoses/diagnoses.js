@@ -237,10 +237,15 @@ function updateSelectedUi() {
   }
 }
 
-function clearIcdSelection() {
+function clearIcdSelection(opts) {
+  const focusSearch = !opts || opts.focusSearch !== false;
   selectedIcd = null;
   updateSelectedUi();
-  diagnosisSearch.focus();
+  if (focusSearch) {
+    diagnosisSearch.focus();
+  } else {
+    diagnosisSearch.blur();
+  }
 }
 
 function applyLang() {
@@ -385,8 +390,9 @@ async function submitDiagnosis() {
       showFormMsg(data.detail || 'Помилка сервера', 'error');
     } else {
       showFormMsg(data.detail || 'Діагноз додано', 'success');
-      clearIcdSelection();
+      diagnosisDropdown.hidden = true;
       diagnosisSearch.value = '';
+      clearIcdSelection({ focusSearch: false });
       await loadDiagnoses();
     }
   } catch (e) {

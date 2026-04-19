@@ -45,6 +45,7 @@ const TRANSLATIONS = {
     pdfLabelBirth: 'Дата народження',
     pdfLabelIot: 'Пристрій IoT',
     pdfLabelDischargeDate: 'Дата виписки',
+    pdfLabelLatestDiagnosis: 'Останній діагноз',
     pdfLabelCourse: 'Перебіг',
     pdfLabelTreatment: 'Лікування',
     pdfLabelRecommendations: 'Рекомендації',
@@ -110,6 +111,7 @@ const TRANSLATIONS = {
     pdfLabelBirth: 'Date of birth',
     pdfLabelIot: 'IoT device',
     pdfLabelDischargeDate: 'Discharge date',
+    pdfLabelLatestDiagnosis: 'Latest diagnosis',
     pdfLabelCourse: 'Clinical course',
     pdfLabelTreatment: 'Treatment',
     pdfLabelRecommendations: 'Recommendations',
@@ -445,6 +447,11 @@ function formatPdfDischargeDate(ymd) {
   });
 }
 
+function formatLatestDiagnosisPdfValue(line) {
+  const s = String(line || '').trim();
+  return s || '\u2014';
+}
+
 function resetDischargeForm() {
   dischargeDate.value = localDateYmd();
   dischargeCourse.value = '';
@@ -528,6 +535,7 @@ function buildPdfDom(payload) {
   addPatientRow('pdfLabelBirth', payload.birth_date);
   addPatientRow('pdfLabelIot', payload.iot_serial);
   addPatientRow('pdfLabelDischargeDate', formatPdfDischargeDate(payload.discharge_date));
+  addPatientRow('pdfLabelLatestDiagnosis', formatLatestDiagnosisPdfValue(payload.latest_diagnosis_line));
   doc.appendChild(grid);
 
   function addSection(titleKey, text) {
@@ -571,22 +579,18 @@ async function runPdfDownload() {
   const imgData = canvas.toDataURL('image/png');
   const pageWidth = pdf.internal.pageSize.getWidth();
   const pageHeight = pdf.internal.pageSize.getHeight();
-  const imgWidth = pageWidth;
-  const imgHeight = (canvas.height * imgWidth) / canvas.width;
-  let heightLeft = imgHeight;
-  let position = 0;
-  pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-  heightLeft -= pageHeight;
-  while (heightLeft > 0) {
-    position = heightLeft - imgHeight;
-    pdf.addPage();
-    pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-    heightLeft -= pageHeight;
+  let imgWidth = pageWidth;
+  let imgHeight = (canvas.height * imgWidth) / canvas.width;
+  if (imgHeight > pageHeight) {
+    imgHeight = pageHeight;
+    imgWidth = (canvas.width * imgHeight) / canvas.height;
   }
+  const x = (pageWidth - imgWidth) / 2;
+  pdf.addImage(imgData, 'PNG', x, 0, imgWidth, imgHeight);
   let safe = pendingPdfPayload.full_name.trim().replace(/[\\/:*?"<>|]+/g, '_').replace(/\s+/g, '_');
   if (!safe) safe = 'patient';
   safe = safe.slice(0, 60);
-  pdf.save(`vypyska_${safe}_${pendingPdfPayload.discharge_date}.pdf`);
+  pdf.save(`Виписка_${safe}_${pendingPdfPayload.discharge_date}.pdf`);
 }
 
 dischargeCancelBtn.addEventListener('click', () => {
@@ -614,11 +618,21 @@ dischargeForm.addEventListener('submit', async (e) => {
   dischargeConfirmBtn.textContent = t('dischargeConfirmWait');
 
   const p = pendingDischargePatient;
+  const soldierIdNum = parseInt(String(p.soldier_id), 10);
 
   try {
+    let latestDiagnosisLine = '';
+    const diagRes = await apiFetch(`/hospitals/diagnoses/${soldierIdNum}`);
+    if (diagRes && diagRes.ok) {
+      const diagList = await diagRes.json().catch(() => []);
+      if (Array.isArray(diagList) && diagList.length > 0 && diagList[0].diagnosis_text) {
+        latestDiagnosisLine = String(diagList[0].diagnosis_text).trim();
+      }
+    }
+
     const res = await apiFetch('/hospitals/discharge_patient', {
       method: 'POST',
-      body: JSON.stringify({ soldier_id: parseInt(String(p.soldier_id), 10) }),
+      body: JSON.stringify({ soldier_id: soldierIdNum }),
     });
 
     if (!res) {
@@ -643,6 +657,7 @@ dischargeForm.addEventListener('submit', async (e) => {
       birth_date: p.birth_date,
       iot_serial: p.iot_serial,
       discharge_date: dateVal,
+      latest_diagnosis_line: latestDiagnosisLine,
       course,
       treatment,
       recommendations,
